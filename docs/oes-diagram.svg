@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="248" viewBox="0 0 1000 248" role="img" aria-labelledby="oes-title oes-desc">
+  <title id="oes-title">Open Eval Standard (OES) flow</title>
+  <desc id="oes-desc">An eval file defines target, scorers, and test cases with input and expected values. A runner reads the eval file, sends each input to your app via command or HTTP, scores each output with code checks and LLM judges against expected values, and applies pass rules to write result.json and rows.jsonl.</desc>
+
+  <defs>
+    <style>
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .title { font-size: 13.5px; font-weight: 600; fill: #0f172a; }
+      .subtitle { font-size: 11px; fill: #64748b; }
+      .body { font-size: 11.5px; fill: #334155; }
+      .key { font-size: 11px; font-weight: 600; fill: #0f172a; }
+      .val { font-size: 11px; fill: #475569; }
+      .arrow-label { font-size: 11px; fill: #475569; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 8.5 5 L 1 8.5 z" fill="#64748b"/>
+    </marker>
+    <clipPath id="clip-eval">
+      <rect x="20" y="28" width="206" height="192" rx="10"/>
+    </clipPath>
+    <clipPath id="clip-result">
+      <rect x="832" y="28" width="148" height="192" rx="10"/>
+    </clipPath>
+  </defs>
+
+  <!-- Light canvas so the diagram stays readable on GitHub in light and dark mode -->
+  <rect x="0.5" y="0.5" width="999" height="247" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+
+  <!-- 1. Eval file -->
+  <g>
+    <rect x="20" y="28" width="206" height="48" fill="#f8fafc" clip-path="url(#clip-eval)"/>
+    <rect x="20" y="28" width="206" height="192" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="20" y1="76" x2="226" y2="76" stroke="#e2e8f0" stroke-width="1"/>
+
+    <text x="34" y="50" class="sans title">Eval file</text>
+    <text x="34" y="66" class="mono subtitle">*.eval.yaml</text>
+
+    <!-- target row -->
+    <rect x="32" y="86" width="182" height="32" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="41" y="106" class="mono key">target</text>
+    <text x="99" y="106" class="sans val">command / HTTP</text>
+
+    <!-- scorers row -->
+    <rect x="32" y="124" width="182" height="32" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="41" y="144" class="mono key">scorers</text>
+    <text x="99" y="144" class="sans val">checks &amp; judges</text>
+
+    <!-- cases row -->
+    <rect x="32" y="162" width="182" height="46" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="41" y="181" class="mono key">cases</text>
+    <text x="41" y="198" class="mono val">input, expected</text>
+  </g>
+
+  <!-- Arrow 1: Eval file -> Runner -->
+  <line x1="226" y1="124" x2="254" y2="124" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 2. Runner -->
+  <g>
+    <rect x="258" y="62" width="118" height="124" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+    <text x="317" y="92" text-anchor="middle" class="sans title">Runner</text>
+    <line x1="276" y1="104" x2="358" y2="104" stroke="#bfdbfe" stroke-width="1"/>
+    <text x="317" y="126" text-anchor="middle" class="sans body">Reads the eval</text>
+    <text x="317" y="146" text-anchor="middle" class="sans body">Runs each case</text>
+    <text x="317" y="167" text-anchor="middle" class="sans subtitle">1 or more turns</text>
+  </g>
+
+  <!-- Arrow 2: Runner -> Your app -->
+  <text x="403" y="114" text-anchor="middle" class="mono arrow-label">input</text>
+  <line x1="376" y1="124" x2="426" y2="124" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 3. Your app -->
+  <g>
+    <rect x="430" y="54" width="142" height="140" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <text x="501" y="81" text-anchor="middle" class="sans title">Your app</text>
+    <text x="501" y="98" text-anchor="middle" class="mono subtitle">command or HTTP</text>
+    <line x1="446" y1="110" x2="556" y2="110" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="501" y="131" text-anchor="middle" class="sans body">Runs unchanged</text>
+    <text x="501" y="154" text-anchor="middle" class="mono val">reply, data</text>
+    <text x="501" y="172" text-anchor="middle" class="mono val">tool_calls, state</text>
+  </g>
+
+  <!-- Arrow 3: Your app -> Scores -->
+  <text x="601" y="114" text-anchor="middle" class="mono arrow-label">output</text>
+  <line x1="572" y1="124" x2="626" y2="124" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 4. Scores -->
+  <g>
+    <rect x="630" y="54" width="134" height="140" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="697" y="81" text-anchor="middle" class="sans title">Scores</text>
+    <text x="697" y="98" text-anchor="middle" class="sans subtitle">0 to 1 per trial</text>
+    <line x1="646" y1="110" x2="748" y2="110" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="697" y="131" text-anchor="middle" class="sans body">checks (code)</text>
+    <text x="697" y="150" text-anchor="middle" class="sans body">judges (LLM)</text>
+    <text x="697" y="172" text-anchor="middle" class="mono subtitle">vs. expected</text>
+  </g>
+
+  <!-- Arrow 4: Scores -> Result -->
+  <text x="798" y="114" text-anchor="middle" class="sans arrow-label">pass rule</text>
+  <line x1="764" y1="124" x2="828" y2="124" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 5. Result -->
+  <g>
+    <rect x="832" y="28" width="148" height="48" fill="#f8fafc" clip-path="url(#clip-result)"/>
+    <rect x="832" y="28" width="148" height="192" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="832" y1="76" x2="980" y2="76" stroke="#e2e8f0" stroke-width="1"/>
+
+    <text x="846" y="50" class="sans title">Result</text>
+    <text x="846" y="66" class="mono subtitle">result.json</text>
+
+    <!-- status pill -->
+    <rect x="844" y="88" width="124" height="30" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <circle cx="855" cy="103" r="3.5" fill="#16a34a"/>
+    <text x="864" y="107" class="sans" font-size="11" font-weight="600" fill="#15803d">passed</text>
+    <circle cx="917" cy="103" r="3.5" fill="#dc2626"/>
+    <text x="926" y="107" class="sans" font-size="11" font-weight="500" fill="#64748b">failed</text>
+
+    <text x="846" y="142" class="sans body">scores</text>
+    <text x="846" y="162" class="sans body">latency &amp; cost</text>
+
+    <line x1="844" y1="178" x2="968" y2="178" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="846" y="199" class="mono subtitle">+ rows.jsonl</text>
+  </g>
+</svg>

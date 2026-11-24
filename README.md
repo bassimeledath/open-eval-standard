@@ -1,8 +1,8 @@
 # Open Eval Standard (OES)
 
-A simple standard for testing AI apps.
+A simple standard for testing AI apps. Plain YAML files, any language, any model provider.
 
-You write what to send your app and what you expect back. A runner sends it, scores the answers and tells you if the app passed. It works with any app, any language and any model provider.
+![Open Eval Standard flow](docs/oes-diagram.svg)
 
 ```yaml
 oes: 1
@@ -23,7 +23,7 @@ cases:
 Install the skill, then ask your agent to "add evals to this app".
 
 ```bash
-npx skills add bassimeledath/open-eval
+npx skills add bassimeledath/open-eval-standard
 ```
 
 Or copy `skills/oes/` into your agent's skills folder.

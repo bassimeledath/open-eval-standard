@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/bassimeledath/open-eval/skills/oes/eval.schema.json",
+  "$id": "https://github.com/bassimeledath/open-eval-standard/skills/oes/eval.schema.json",
   "title": "OES eval file",
   "type": "object",
   "required": ["oes", "name", "target", "scorers", "cases"],
