@@ -1,11 +1,11 @@
-# Open Eval
+# Open Eval Standard (OES)
 
-A simple file format for testing AI apps.
+A simple standard for testing AI apps.
 
 You write what to send your app and what you expect back. A runner sends it, scores the answers and tells you if the app passed. It works with any app, any language and any model provider.
 
 ```yaml
-openeval: 1
+oes: 1
 name: ticket-triage
 target: {command: "python -m triage.eval_entry"}
 scorers:
@@ -26,16 +26,16 @@ Install the skill, then ask your agent to "add evals to this app".
 npx skills add bassimeledath/open-eval
 ```
 
-Or copy `skills/open-eval/` into your agent's skills folder.
+Or copy `skills/oes/` into your agent's skills folder.
 
 ## Read more
 
-- [Design](DESIGN.md): what Open Eval is and why, in plain language.
-- [Spec](skills/open-eval/SPEC.md): the full format.
-- [Examples](skills/open-eval/examples/): a classifier, a tool-using agent and a chat with a simulated user.
+- [Design](DESIGN.md): what OES is and why, in plain language.
+- [Spec](skills/oes/SPEC.md): the full format.
+- [Examples](skills/oes/examples/): a classifier, a tool-using agent and a chat with a simulated user.
 
 ## Status
 
-Draft. The format may change before version 1 is final.
+Draft. The standard may change before version 1 is final.
 
 MIT license.

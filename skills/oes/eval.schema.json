@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/bassimeledath/open-eval/skills/open-eval/eval.schema.json",
-  "title": "Open Eval file",
+  "$id": "https://github.com/bassimeledath/open-eval/skills/oes/eval.schema.json",
+  "title": "OES eval file",
   "type": "object",
-  "required": ["openeval", "name", "target", "scorers", "cases"],
+  "required": ["oes", "name", "target", "scorers", "cases"],
   "additionalProperties": false,
   "properties": {
-    "openeval": {"const": 1},
+    "oes": {"const": 1},
     "name": {"$ref": "#/$defs/name"},
     "description": {"type": "string"},
     "target": {"$ref": "#/$defs/endpoint"},

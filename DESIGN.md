@@ -1,8 +1,8 @@
-# Open Eval design
+# OES design
 
 ## What it is
 
-Open Eval is a simple way to write tests for AI apps. These tests are called evals.
+The Open Eval Standard (OES) is one simple way to write tests for AI apps. These tests are called evals.
 
 An eval is a file. It lists questions or situations to give your app, says what a good answer looks like, and says how good the app has to be to pass. A program called a runner reads the file, tries each one on your app, scores the answers and writes down what happened.
 
@@ -10,7 +10,7 @@ An eval is a file. It lists questions or situations to give your app, says what 
 
 Every project that uses AI ends up inventing its own way to test it. The tests live in one-off scripts, each in a different shape, and they're hard to reuse or compare. Each new project starts from zero.
 
-Open Eval is one shape that fits most AI apps: chatbots, agents that use tools, classifiers and single model calls. Write evals the same way in every project, and any runner, or any coding agent, can work with them.
+OES is one shape that fits most AI apps: chatbots, agents that use tools, classifiers and single model calls. Write evals the same way in every project, and any runner, or any coding agent, can work with them.
 
 ## The pieces
 
@@ -93,7 +93,7 @@ The whole format is built from the eight shapes below. Each one lists every fiel
 ### Eval file
 
 ```yaml
-openeval: 1                      # required. The spec version
+oes: 1                      # required. The spec version
 name: ticket-triage              # required. Lowercase letters, digits, - and _
 target: {command: "python -m triage.eval_entry"}   # required. Or {http: "http://..."}
 scorers: [ ... ]                 # required. At least one has a pass rule
@@ -230,7 +230,7 @@ error: null                      # or {kind: target, message: "..."}
 
 ## Where things are
 
-- `skills/open-eval/SPEC.md`: the full format.
-- `skills/open-eval/eval.schema.json`: checks that an eval file is valid.
-- `skills/open-eval/examples/`: a classifier, a tool-using agent and a simulated conversation.
-- `skills/open-eval/SKILL.md`: the instructions a coding agent follows to add evals to a project.
+- `skills/oes/SPEC.md`: the full format.
+- `skills/oes/eval.schema.json`: checks that an eval file is valid.
+- `skills/oes/examples/`: a classifier, a tool-using agent and a simulated conversation.
+- `skills/oes/SKILL.md`: the instructions a coding agent follows to add evals to a project.

@@ -1,4 +1,4 @@
-openeval: 1
+oes: 1
 name: wifi-help
 description: A user cannot get a laptop online. The assistant must fix it or hand off.
 target: {http: "http://localhost:8000/eval"}

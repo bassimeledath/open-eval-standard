@@ -1,4 +1,4 @@
-openeval: 1
+oes: 1
 name: refund-agent
 description: The agent refunds only orders that qualify, using the right tools.
 target: {http: "http://localhost:8000/eval"}

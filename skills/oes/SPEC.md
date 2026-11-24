@@ -1,10 +1,10 @@
-# Open Eval spec
+# Open Eval Standard (OES)
 
 Version 1, draft 2.
 
 ## 1. Purpose
 
-Open Eval is a plain file format for evals of AI apps. An eval says what to send the app, what to expect back and how to score it. Any runner that follows this spec can run any eval written to it, in any language, with any model provider.
+The Open Eval Standard (OES) is a standard way to write evals of AI apps, as plain files. An eval says what to send the app, what to expect back and how to score it. Any runner that follows this spec can run any eval written to it, in any language, with any model provider.
 
 The app does not change how it is built. It exposes one entry point, the target, that the runner calls.
 
@@ -32,7 +32,7 @@ Names of evals, scorers and judges use lowercase letters, digits, hyphens and un
 
 | Field | Required | Meaning |
 |---|---|---|
-| `openeval` | Yes | The spec version. Use `1`. |
+| `oes` | Yes | The spec version. Use `1`. |
 | `name` | Yes | Unique in the repository. |
 | `target` | Yes | How to call the app. See 4. |
 | `scorers` | Yes | How to score. See 6. At least one scorer has a `pass` rule. |
@@ -172,7 +172,7 @@ Prefer two choices. They are easier to agree on and to check against human label
 
 ## 8. The result
 
-Each run writes a folder, `.openeval/runs/<run_id>/`, in the app's repository:
+Each run writes a folder, `.oes/runs/<run_id>/`, in the app's repository:
 
 - `result.json`: the result of the run.
 - `rows.jsonl`: one row per trial.
@@ -219,5 +219,5 @@ To compare two versions of an app, run the eval on each and compare the two resu
 1. Check each eval file against `eval.schema.json`. Unknown fields are errors, except inside `metadata`, `data`, `state` and `expected`.
 2. A runner rejects an eval with two test cases or two scorers of the same name.
 3. An eval must be able to fail. Run it once against a target that replies with nothing and calls no tools. If it passes, the test cases or scorers are too weak. The exception is an eval that only checks that something does not happen, such as `tool_not_called`.
-4. A change that breaks existing evals raises `openeval`. A new optional field does not.
+4. A change that breaks existing evals raises `oes`. A new optional field does not.
 5. To add a built-in check, add a row to the table in 6.
