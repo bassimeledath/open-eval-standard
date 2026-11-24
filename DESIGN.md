@@ -75,6 +75,159 @@ Cookbook ideas: search-based apps (RAG), structured output, tool-using agents, v
 
 A new field joins the format only when a real use case can't be covered by these.
 
+## The exact shapes
+
+The whole format is built from the eight shapes below. Each one lists every field it has; there are no others. Fields marked `required` must be there, and everything else is optional. The files you write are YAML. Everything sent between the runner and the app, checks and models is JSON with the same fields.
+
+| Shape | Fields | Required |
+|---|---|---|
+| Eval file | 9 | 5 |
+| Test case | 5 | 2 |
+| Input | 8 | at least 1 |
+| Message | 2 | 2 |
+| Scorer | 5 | 1, plus a check or a judge |
+| Judge | 4 | 2 |
+| What the runner sends the app | 4 | 4 |
+| What the app sends back | 5 | 0 |
+
+### Eval file
+
+```yaml
+openeval: 1                      # required. The spec version
+name: ticket-triage              # required. Lowercase letters, digits, - and _
+target: {command: "python -m triage.eval_entry"}   # required. Or {http: "http://..."}
+scorers: [ ... ]                 # required. At least one has a pass rule
+cases: [ ... ]                   # required. Or {file: cases.jsonl}
+description: One sentence on what it checks.
+trial_count: 1                   # tries per test case
+tags: []
+metadata: {}                     # anything else
+```
+
+### Test case
+
+```yaml
+id: charged-twice                # required. Unique in the eval
+input: { ... }                   # required. See below
+expected:                        # one entry per scorer, under the scorer's name
+  right-queue: {data.queue: billing}
+tags: []
+metadata: {}
+```
+
+### Input
+
+At least one of `message`, `messages`, `data`, `script` or `persona`.
+
+```yaml
+message: "I was billed twice."   # one user message
+messages: [ ... ]                # or the conversation so far, as messages
+data: {}                         # any other JSON the app takes
+state: {}                        # the app's state before the first turn
+script: ["Hi", "It's order 1042"]   # fixed user lines, one per turn
+persona: A calm adult whose laptop won't join wifi.   # an AI plays this user
+max_turns: 20                    # required with script or persona
+stop_when: {state.done: true}    # end early when the app returns this
+```
+
+`script` and `persona` can't be used together, and neither can `message` and `messages`.
+
+### Message
+
+```yaml
+role: user                       # required. user or assistant
+content: "What's in this photo?" # required. Text, or a list of parts:
+# content:
+#   - {type: text, text: "What's in this photo?"}
+#   - {type: file, path: photo.png, mime: image/png}
+```
+
+### Scorer
+
+```yaml
+name: right-queue                # required. Unique in the eval
+check: equals                    # a check or a judge, not both
+judge: goal-completion           # the name of a judge file
+scope: trial                     # trial or run. Only custom checks set it
+pass: {mean: 0.9}                # each or mean (trial), min or max (run)
+```
+
+A check is a built-in name (`equals`, `reply_contains`, `tool_called`, `tool_not_called`, `latency_p95_ms`, `cost_per_trial_usd`), or a custom one: `{command: "..."}` or `{http: "..."}`.
+
+### Judge
+
+```yaml
+name: goal-completion            # required
+prompt: Did the assistant solve the user's problem?   # required
+choices: {pass: 1, fail: 0}      # each answer and its score
+model: null                      # a name the runner understands. null = its default
+```
+
+### What the runner sends the app
+
+```yaml
+session_id: 7f3a                 # the same for every turn of one try
+messages: [ ... ]                # the conversation so far
+data: {}                         # the test case's data
+state: {}                        # the state the app returned last turn
+```
+
+### What the app sends back
+
+```yaml
+reply: Your refund is on its way.
+data: {queue: billing}           # structured output
+tool_calls:
+  - {name: refund, args: {order_id: "1042"}, result: {ok: true}}   # or error
+state: {refund_done: true}       # sent back on the next turn
+cost_usd: 0.002
+```
+
+### The other messages
+
+These follow from the shapes above. They're short enough to list here.
+
+| Who | Gets | Returns |
+|---|---|---|
+| Custom check, per try | `input`, `output`, `expected` (its own entry) | `score` (0 to 1, or null to skip) and `reason` |
+| Custom check, per run | `rows`: every try of the run | `score` and `reason` |
+| Judge model | the prompt, input, transcript, output and expected entry | `reason` and `choice` |
+| Simulated user | the persona and the transcript | the next user message, or `[done]` |
+
+### What a run writes
+
+`result.json`, one per run:
+
+```yaml
+eval: ticket-triage
+run_id: 2026-11-23-a1b2
+started_at: "2026-11-23T21:30:00Z"
+app_version: a1b2c3d             # for example a git commit
+models: {app: "...", judge: "...", user: "..."}
+eval_hash: "sha256:..."          # changes when the eval or a judge changes
+status: passed                   # passed, failed, error or not_evaluated
+scores:
+  right-queue: {value: 0.95, passed: true, failing_cases: [reset-email]}
+  fast: {value: 1800, passed: true, failing_cases: []}
+latency_ms: {p50: 640, p95: 1800}
+cost_usd: {app: 0.002, judges: 0.0}
+cases: {total: 20, errored: []}
+```
+
+`rows.jsonl`, one line per try:
+
+```yaml
+case_id: charged-twice
+trial: 1
+input: { ... }
+expected: { ... }
+output: {transcript: [ ... ], tool_calls: [ ... ], data: {queue: billing}, state: {}}
+scores: {right-queue: {score: 1, reason: null}}
+latency_ms: [640]                # one per turn
+cost_usd: 0.002
+error: null                      # or {kind: target, message: "..."}
+```
+
 ## Where things are
 
 - `skills/open-eval/SPEC.md`: the full format.

@@ -191,7 +191,7 @@ A runner may also send the same rows to an eval platform. The local files are th
 | `scores` | Per scorer: `value` (the mean, or the run number), `passed` (true, false or null if no pass rule), and `failing_cases` (ids of test cases with a trial scoring below 1). |
 | `latency_ms` | p50 and p95 of one turn. |
 | `cost_usd` | Mean cost of one trial, for the app and for the judges. |
-| `cases` | `total` and `errored`, with the ids of errored test cases. |
+| `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored. |
 
 Status, in order:
 
@@ -202,7 +202,7 @@ Status, in order:
 
 `not_evaluated` is never a pass. No tool may change it to `passed`.
 
-Each row in `rows.jsonl` has `case_id`, `trial`, `input`, `output` (the `transcript`, `tool_calls`, and the last `data` and `state`), `scores` (per scorer: `score` and `reason`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
+Each row in `rows.jsonl` has `case_id`, `trial`, `input`, `expected`, `output` (the `transcript`, `tool_calls`, and the last `data` and `state`), `scores` (per scorer: `score` and `reason`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
 
 Scorers read only the logged rows. So a runner can re-score a saved run without calling the app again.
 
