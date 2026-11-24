@@ -62,7 +62,7 @@ Request:
 |---|---|
 | `session_id` | A new id for each trial attempt. The same id for every turn of one attempt. |
 | `messages` | The transcript so far, including the agent's earlier replies. On a turn with a new user message, it ends with that message. `[]` if there is nothing yet. |
-| `data` | The test case's `input.data`, or `{}`. On a script turn with `data`, that `data` is merged over `input.data`: its keys win, and the other keys stay. |
+| `data` | The test case's `input.data`, or `{}`. On a script turn with `data`, that `data` is merged over `input.data`, one level deep: its top-level keys win, and the other keys stay. |
 | `state` | On the first turn, the test case's `input.state`. After that, the `state` the agent returned on the turn before. `{}` if neither. |
 
 Response. Every field is optional:
@@ -83,13 +83,13 @@ A `command` runs through `/bin/sh -c`, from the repository root, with the runner
 
 An `http` target gets a POST with `Content-Type: application/json`. A status outside 200 to 299 is an error.
 
-A response that isn't a JSON object is an error. So is a `reply` that isn't text, a `state` that isn't an object, `tool_calls` that isn't a list of objects with a text `name`, or a `cost_usd` that isn't a number. Other fields are kept in `turns`.
+A response that isn't a JSON object is an error. So is a `reply` that isn't text, a `state` that isn't an object, `tool_calls` that isn't a list of objects with a text `name`, or a `cost_usd` that isn't a number. A field set to `null` counts as absent. Other fields are kept in `turns`.
 
 When a target looks after its own tools, so the runner can't see them, the target reports them itself in `tool_calls`. An agent whose tools are internal needs a small hook that records each call.
 
 ### 4.2 Files
 
-A file can go in a message part, or anywhere in `data` or a script item, as a `{type: file, path, mime}` object. `path` can be a file or a folder, and `mime` is optional. Any object with `type: file` and a text `path` counts.
+A file can go in a message part, or anywhere in `data` or a script item, as a `{type: file, path, mime}` object. `path` can be a file or a folder, and `mime` is optional. Any object with `type: file` and a text `path` counts. Objects in `state` are left alone.
 
 Each trial gets its own copy of every file and folder, inside the run folder, and the request carries the copy's absolute path. So an agent can change its files freely, and the files stay with the run. A source used twice in one trial is copied once. A retried trial gets fresh copies.
 
@@ -131,7 +131,7 @@ A multi-turn test case gets each next input in one of two ways:
 
 A multi-turn test case also ends at `max_turns`, or when `stop_when` matches. The runner checks `stop_when` after every turn, the first included. It uses the same output paths and matching as `equals`: every path in one object must match, and a list matches when any of its objects does.
 
-The simulated user gets the persona and the transcript, not `data`, `state` or tool calls. It replies with the next user message, or with exactly `[done]` (after trimming spaces) to end the conversation. It speaks first when the input has no `message` or `messages`, or when `messages` ends with an `assistant` message. If it ends the conversation before the first turn, that trial did not run: its row has no scores and no error, and the run's status is `not_evaluated`. The runner records which model played the user.
+The simulated user gets the persona and the transcript, not `data`, `state` or tool calls. It replies with the next user message, or with exactly `[done]` (after trimming spaces) to end the conversation. It speaks first when the input has no `message` or `messages`, or when `messages` ends with an `assistant` message. If it ends the conversation before the first turn, that trial did not run: its row has `scores: {}` and no error, it counts as neither scored nor skipped, and the run's status is `not_evaluated`. Once the case has ended, the runner doesn't ask the simulated user again. The runner records which model played the user.
 
 ## 6. Scorers
 
@@ -205,9 +205,9 @@ choices: {pass: 1, fail: 0}
 | `choices` | No | Each answer and its score, from 0 to 1. Default `{pass: 1, fail: 0}`. |
 | `model` | No | The model to use, as a name the runner understands. Default: the runner's judge model. |
 
-The runner sends the judge model the prompt, the test case's input (with any files, if the model accepts them), the transcript and output, and the scorer's expected entry, if there is one (often a list of criteria, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. The runner reads the text from the first `{` to the last `}`, so a code fence around it is fine. A choice matches ignoring case. An answer that isn't valid JSON, or names no listed choice, is a `judge` error. The row logs `score`, `reason` and `choice`.
+The runner sends the judge model the prompt, the test case's input (with any files, if the model accepts them), the transcript and output, and the scorer's expected entry, if there is one (often a list of criteria, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. The runner reads the text from the first `{` to the last `}`, so a code fence around it is fine. A choice matches ignoring case, and the row logs it as the judge file spells it. An answer that isn't valid JSON, or names no listed choice, is a `judge` error. The row logs `score`, `reason` and `choice`.
 
-How a runner reaches a model is up to the runner, and so is the wording around the judge prompt and the simulated user. That's why results record the runner (8).
+A runner reaches models through `OES_LLM_COMMAND` (8.4), and may offer other ways too. The wording around the judge prompt and the simulated user is up to the runner. That's why results record the runner (8).
 
 Prefer two choices. They are easier to agree on and to check against human labels. Before trusting a judge, check it against a few human labels.
 
@@ -227,15 +227,15 @@ Each run writes a folder, `.oes/runs/<run_id>/`, in the agent's repository:
 |---|---|
 | `eval`, `run_id`, `started_at` | The eval, the run id and when the run started, in ISO 8601 UTC. |
 | `runner` | `{name, version}` of the runner. |
-| `tags`, `metadata` | Copied from the eval. |
+| `tags`, `metadata` | Copied from the eval, or `[]` and `{}`. |
 | `agent_version` | A label for the agent version under test, such as a git commit, or `null`. |
-| `models` | Every model that the run used, by role: `agent`, `judge`, `user`. Whatever names the runner knows, or `null`. |
+| `models` | Every model that the run used, by role: `agent`, `judge`, `user`. Each is a name, a list of names if the role used several, or `null`. |
 | `eval_hash` | See 8.2. |
 | `status` | `passed`, `failed`, `error` or `not_evaluated`. |
-| `scores` | Per scorer. Trial scorers: `value` (the mean of scored trials), `passed`, `scored` and `skipped` (numbers of trials), and `failing_cases`. Run scorers: `value`, `passed` and `reason`. `passed` is `null` when there is no pass rule or nothing was scored. |
+| `scores` | Per scorer. Trial scorers: `value` (the mean of scored trials), `passed`, `scored` and `skipped` (numbers of trials; an errored trial is neither), and `failing_cases`. Run scorers: `value`, `passed` and `reason`. `passed` is `null` when there is no pass rule or nothing was scored. |
 | `latency_ms` | `p50` and `p95` of one turn, over every turn of trials that didn't error. |
 | `cost_usd` | Mean cost of one trial, over trials that didn't error, for the `agent`, the `judges` and the simulated `user`. The agent's mean covers only trials where it reported a cost, and is `null` if it never did. For judges and the user, a trial with no such call counts as 0, and the value is `null` if no call reported a cost. |
-| `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored. |
+| `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored, in file order. |
 
 Percentiles use the nearest-rank method: sort the values and take the one at position `ceil(p / 100 × n)`, counting from 1.
 
@@ -255,7 +255,7 @@ Each row in `rows.jsonl` has:
 | Field | Meaning |
 |---|---|
 | `case_id`, `trial` | The test case, and the trial counting from 1. |
-| `session_id`, `attempts` | The id of the attempt recorded, and how many attempts the trial took. |
+| `session_id`, `attempts` | The id of the attempt recorded, and how many times the conversation ran. Scorer retries don't count. |
 | `tags` | The test case's tags, or `[]`. |
 | `input` | The input as sent, with file paths pointing at the trial copies. |
 | `expected` | The test case's `expected`, or `{}`. |
@@ -271,13 +271,13 @@ Scorers read only the logged rows, and a custom check gets `input` and `output` 
 
 A trial can fail for a reason outside the agent's logic: the target crashes or returns something invalid, a check, a judge or the simulated user breaks, or a call times out. The `kind` is `target`, `check`, `judge`, `user` or `timeout`.
 
-The runner retries up to 2 times by default, and must let the user set this to 0. Retries go like this:
+Calls to models time out after 300 seconds by default, like targets. The runner retries up to 2 times by default, and must let the user set this to 0. Retries go like this:
 
 - When the target or the simulated user fails, the whole trial runs again, with a new `session_id` and fresh file copies.
 - When a check or a judge fails, only that scorer runs again, on the logged row. The agent is never called again because a grader failed.
 - When a run scorer fails, it runs again on its own.
 
-If it still fails, the row gets `error: {kind, message}` and no scores. The row keeps the last attempt's partial output and latency. Errored trials count toward no score, latency or cost. Cost and latency come from the attempt that was recorded.
+If it still fails, the row gets `error: {kind, message}` and `scores: {}`. The row keeps the last attempt's partial output and latency. Errored trials count toward no score, latency or cost. Cost and latency come from the attempt that was recorded.
 
 Retrying calls the agent again. For an agent with real side effects, such as sending email or charging a card, set retries to 0 or point it at a test environment.
 
@@ -285,9 +285,9 @@ Retrying calls the agent again. For an agent with real side effects, such as sen
 
 `eval_hash` is `sha256:` followed by the lowercase hex SHA-256 of this byte stream:
 
-1. Take every file the eval uses: the eval file, its cases file, the judge files its scorers name, every `{type: file}` input (a folder counts as every regular file inside it), and every regular file in the `checks/` folder next to the eval file.
+1. Take every file the eval uses: the eval file, its cases file, the judge files its scorers name, every `{type: file}` input (a folder counts as every regular file inside it), and every regular file in the `checks/` folder next to the eval file, subfolders included.
 2. Leave out `__pycache__` folders, `.pyc` files and `.DS_Store` files.
-3. Write each path relative to the eval file's folder, with `/` between parts, and sort the paths by their UTF-8 bytes.
+3. Write each path relative to the eval file's folder, with `/` between parts, keeping any `..` parts, and sort the paths by their UTF-8 bytes.
 4. For each file in that order, add the path's UTF-8 bytes, a zero byte, the file's length in bytes as decimal digits, a zero byte, and the file's bytes.
 
 So changing a test, a grader or an input changes the hash, and moving the whole repository doesn't. A URL check counts only through its URL in the eval file, so a change behind the URL doesn't show. Test vectors are in `conformance/`.
@@ -300,15 +300,25 @@ To compare two versions of an agent, run the eval on each and compare the two re
 
 A runner offers these commands, so any runner can be tested the same way:
 
-- `run <eval file>` runs the eval. Its last line of stdout is the run folder's absolute path. It exits 0 for `passed`, 1 for any other status, and 2 for an invalid eval, without running it.
+- `run <eval file> [--agent-version LABEL] [--agent-model NAME]` runs the eval. The two options fill `agent_version` and `models.agent`. Its last line of stdout is the run folder's absolute path. It exits 0 for `passed`, 1 for any other status, and 2 for an invalid eval, without running it.
 - `validate <eval file>` checks the eval and its judge files without calling anything. It exits 0 if valid, 2 if not.
+
+These environment variables set how it runs:
+
+| Variable | Meaning |
+|---|---|
+| `OES_RETRIES` | Retries per failure (8.1). Default 2. |
+| `OES_LLM_COMMAND` | A shell command for judge and simulated-user calls. The runner runs it from the repository root and writes `{role, model, prompt}` as JSON to stdin: `role` is `judge` or `user`, and `model` is a name or `null`. The command prints `{text, cost_usd}`, read like a target's response; `cost_usd` is optional. A non-zero exit or bad JSON is a `judge` or `user` error. |
+| `OES_JUDGE_MODEL`, `OES_USER_MODEL` | The default judge and simulated-user models. A judge file's `model` wins. |
+
+If an eval needs a judge or a simulated user and there's no way to reach a model, `run` exits 2. `validate` doesn't need one.
 
 A runner rejects, with exit 2, any eval that uses something it doesn't support. It never scores what it can't run.
 
 ## 9. Rules
 
-1. Check each eval file against `eval.schema.json`. Unknown fields are errors, except inside `metadata`, `data`, `state` and `expected`.
-2. A runner rejects an eval with two test cases or two scorers of the same name, an `expected` key that names no scorer, a missing cases, judge or input file, or a judge file with fields other than the four in 7.
+1. Check each eval file against `eval.schema.json`, and each judge file against `judge.schema.json`. Unknown fields are errors, except inside `metadata`, `data`, `state` and `expected`.
+2. A runner rejects an eval with two test cases or two scorers of the same name, an `expected` key that names no scorer, a missing cases, judge or input file, a judge whose `name` doesn't match its file, a duplicate key in a cases file line, or a value JSON can't hold, such as `.inf` or `.nan`.
 3. An eval must be able to fail. Run it once against a target that returns an empty response, `{}`. If it passes, the test cases or scorers are too weak. The exception is an eval that only checks that something does not happen, such as `tool_not_called`.
 4. A change that breaks existing evals raises `oes`. A new optional field does not.
 5. To add a built-in check, add a row to the table in 6, and a test to `conformance/`.
