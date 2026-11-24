@@ -43,7 +43,9 @@ Or copy `skills/oes/` into your agent's skills folder.
 
 ## I use Braintrust/LangSmith/Langfuse/Arize/&lt;any-of-the-other-million-ones&gt;, why do I even need this?
 
-Keep using them. They're great at storing runs, showing traces and comparing results. OES is about the evals themselves. Today your test cases and grading rules live in one tool's SDK or UI, so they're hard to share across teams and you lose them when you switch tools. With OES they're plain files in your repo that any runner can run, your coding agent can write, and your teammates can review in a pull request. Each run writes plain JSON rows, so you can send the results to whichever platform you already use.
+OES doesn't replace them; it works alongside them. Those tools are great at storing runs, showing traces and comparing results. OES is about the evals themselves: your test cases and grading rules live as plain files in your repo instead of inside one tool's SDK or UI, so any runner can run them, your coding agent can write them, and your teammates can review them in a pull request.
+
+For example, you write `refund-agent.eval.yaml` once, run it in CI on every pull request, and send each run's rows to Braintrust to look at the traces. If you move to Langfuse next year, the eval file doesn't change.
 
 ## Read more
 
