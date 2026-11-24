@@ -41,6 +41,10 @@ npx skills add bassimeledath/open-eval-standard
 
 Or copy `skills/oes/` into your agent's skills folder.
 
+## I use Braintrust/LangSmith/Langfuse/Arize/&lt;any-of-the-other-million-ones&gt;, why do I even need this?
+
+Keep using them. They're great at storing runs, showing traces and comparing results. OES is about the evals themselves. Today your test cases and grading rules live in one tool's SDK or UI, so they're hard to share across teams and you lose them when you switch tools. With OES they're plain files in your repo that any runner can run, your coding agent can write, and your teammates can review in a pull request. Each run writes plain JSON rows, so you can send the results to whichever platform you already use.
+
 ## Read more
 
 - [Design](DESIGN.md): what OES is and why, in plain language.
