@@ -62,7 +62,7 @@
     <line x1="276" y1="104" x2="358" y2="104" stroke="#bfdbfe" stroke-width="1"/>
     <text x="317" y="126" text-anchor="middle" class="sans body">Reads the eval</text>
     <text x="317" y="146" text-anchor="middle" class="sans body">Runs each case</text>
-    <text x="317" y="167" text-anchor="middle" class="sans subtitle">1 or more turns</text>
+    <text x="317" y="167" text-anchor="middle" class="sans subtitle">single- or multi-turn</text>
   </g>
 
   <!-- Arrow 2: Runner -> Your agent -->
