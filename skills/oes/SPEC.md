@@ -83,7 +83,7 @@ A `command` runs through `/bin/sh -c`, from the repository root, with the runner
 
 An `http` target gets a POST with `Content-Type: application/json`. A status outside 200 to 299 is an error.
 
-A response that isn't a JSON object is an error. So is a `reply` that isn't text, a `state` that isn't an object, `tool_calls` that isn't a list of objects with a text `name`, or a `cost_usd` that isn't a number. A field set to `null` counts as absent. Other fields are kept in `turns`.
+A response that isn't a JSON object is an error. So is a `reply` that isn't text, a `state` that isn't an object, `tool_calls` that isn't a list of objects with a text `name`, or a `cost_usd` that isn't a number. Any top-level field set to `null` counts as absent. Other fields are kept in `turns`. A response that fails these checks is an error, and isn't logged as a turn.
 
 When a target looks after its own tools, so the runner can't see them, the target reports them itself in `tool_calls`. An agent whose tools are internal needs a small hook that records each call.
 
@@ -262,7 +262,7 @@ Each row in `rows.jsonl` has:
 | `output` | `transcript`, `tool_calls`, `turns`, and the last turn's `reply`, `data` and `state`, exactly as the agent returned them. A key the last turn didn't return is left out. |
 | `scores` | Per scorer: `score`, `reason`, plus `value` for custom checks and `choice` for judges. |
 | `latency_ms` | One number per turn. |
-| `cost_usd` | `{agent, judges, user}` for this trial, each `null` when unknown. |
+| `cost_usd` | `{agent, judges, user}` for this trial, each `null` when there was no such call or no cost was reported. |
 | `error` | Only if it errored: `{kind, message}`. |
 
 Scorers read only the logged rows, and a custom check gets `input` and `output` in this same shape. So a runner can re-score a saved run without calling the agent again.
@@ -277,7 +277,7 @@ Calls to models time out after 300 seconds by default, like targets. The runner 
 - When a check or a judge fails, only that scorer runs again, on the logged row. The agent is never called again because a grader failed.
 - When a run scorer fails, it runs again on its own.
 
-If it still fails, the row gets `error: {kind, message}` and `scores: {}`. The row keeps the last attempt's partial output and latency. Errored trials count toward no score, latency or cost. Cost and latency come from the attempt that was recorded.
+If it still fails, the row gets `error: {kind, message}` and `scores: {}`. The row keeps the last attempt's partial output and latency: the valid turns before the failure. Errored trials count toward no score, latency or cost. Cost and latency come from the attempt that was recorded.
 
 Retrying calls the agent again. For an agent with real side effects, such as sending email or charging a card, set retries to 0 or point it at a test environment.
 
