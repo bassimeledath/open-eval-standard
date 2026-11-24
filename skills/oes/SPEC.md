@@ -131,7 +131,7 @@ A multi-turn test case gets each next input in one of two ways:
 
 A multi-turn test case also ends at `max_turns`, or when `stop_when` matches. The runner checks `stop_when` after every turn, the first included. It uses the same output paths and matching as `equals`: every path in one object must match, and a list matches when any of its objects does.
 
-The simulated user gets the persona and the transcript, not `data`, `state` or tool calls. It replies with the next user message, or with exactly `[done]` (after trimming spaces) to end the conversation. It speaks first when the input has no `message` or `messages`, or when `messages` ends with an `assistant` message. If it ends the conversation before the first turn, the test case did not run. The runner records which model played the user.
+The simulated user gets the persona and the transcript, not `data`, `state` or tool calls. It replies with the next user message, or with exactly `[done]` (after trimming spaces) to end the conversation. It speaks first when the input has no `message` or `messages`, or when `messages` ends with an `assistant` message. If it ends the conversation before the first turn, that trial did not run: its row has no scores and no error, and the run's status is `not_evaluated`. The runner records which model played the user.
 
 ## 6. Scorers
 
@@ -173,7 +173,7 @@ Built-in checks:
 | `latency_p95_ms` | Run | None | Returns the 95th percentile of turn latency, in milliseconds (see 8). |
 | `cost_per_trial_usd` | Run | None | Returns the agent's mean cost per trial, in US dollars. If the agent never reports a cost, it returns `null`: unknown, not zero. |
 
-A trial check scores 1 or 0. A runner rejects a built-in entry of the wrong shape, such as a single text where `reply_contains` needs a list.
+A trial check scores 1 or 0. A runner rejects a built-in entry of the wrong shape, such as a single text where `reply_contains` needs a list, or an empty list.
 
 **Text.** `reply_contains` and `reply_not_contains` look in every reply, ignoring case. A trial with no replies fails `reply_contains` and passes `reply_not_contains`.
 
@@ -205,7 +205,7 @@ choices: {pass: 1, fail: 0}
 | `choices` | No | Each answer and its score, from 0 to 1. Default `{pass: 1, fail: 0}`. |
 | `model` | No | The model to use, as a name the runner understands. Default: the runner's judge model. |
 
-The runner sends the judge model the prompt, the test case's input (with any files, if the model accepts them), the transcript and output, and the scorer's expected entry, if there is one (often a list of criteria, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. A choice matches ignoring case. An answer that isn't valid JSON, or names no listed choice, is a `judge` error. The row logs `score`, `reason` and `choice`.
+The runner sends the judge model the prompt, the test case's input (with any files, if the model accepts them), the transcript and output, and the scorer's expected entry, if there is one (often a list of criteria, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. The runner reads the text from the first `{` to the last `}`, so a code fence around it is fine. A choice matches ignoring case. An answer that isn't valid JSON, or names no listed choice, is a `judge` error. The row logs `score`, `reason` and `choice`.
 
 How a runner reaches a model is up to the runner, and so is the wording around the judge prompt and the simulated user. That's why results record the runner (8).
 
@@ -234,7 +234,7 @@ Each run writes a folder, `.oes/runs/<run_id>/`, in the agent's repository:
 | `status` | `passed`, `failed`, `error` or `not_evaluated`. |
 | `scores` | Per scorer. Trial scorers: `value` (the mean of scored trials), `passed`, `scored` and `skipped` (numbers of trials), and `failing_cases`. Run scorers: `value`, `passed` and `reason`. `passed` is `null` when there is no pass rule or nothing was scored. |
 | `latency_ms` | `p50` and `p95` of one turn, over every turn of trials that didn't error. |
-| `cost_usd` | Mean cost of one trial, over trials that didn't error, for the `agent`, the `judges` and the simulated `user`. The agent's mean covers only trials where it reported a cost, and is `null` if it never did. For judges and the user, a trial with no such call counts as 0, and the value is `null` if the run made none. |
+| `cost_usd` | Mean cost of one trial, over trials that didn't error, for the `agent`, the `judges` and the simulated `user`. The agent's mean covers only trials where it reported a cost, and is `null` if it never did. For judges and the user, a trial with no such call counts as 0, and the value is `null` if no call reported a cost. |
 | `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored. |
 
 Percentiles use the nearest-rank method: sort the values and take the one at position `ceil(p / 100 × n)`, counting from 1.
@@ -259,7 +259,7 @@ Each row in `rows.jsonl` has:
 | `tags` | The test case's tags, or `[]`. |
 | `input` | The input as sent, with file paths pointing at the trial copies. |
 | `expected` | The test case's `expected`, or `{}`. |
-| `output` | `transcript`, `tool_calls`, `turns`, and the last turn's `reply`, `data` and `state`. A key the last turn didn't return is left out. |
+| `output` | `transcript`, `tool_calls`, `turns`, and the last turn's `reply`, `data` and `state`, exactly as the agent returned them. A key the last turn didn't return is left out. |
 | `scores` | Per scorer: `score`, `reason`, plus `value` for custom checks and `choice` for judges. |
 | `latency_ms` | One number per turn. |
 | `cost_usd` | `{agent, judges, user}` for this trial, each `null` when unknown. |
