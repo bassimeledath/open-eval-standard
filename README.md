@@ -1,41 +1,70 @@
-# Open Eval Standard (OES)
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg">
+    <img src="docs/logo.svg" alt="OES, Open Eval Standard" width="300">
+  </picture>
+</p>
 
-A dead simple standard for testing AI agents. Each test says what to give your agent, what you expect it to do, and how to tell whether it passed. Plain YAML files, any language, any model provider.
+<p align="center"><b>Test your AI agent from the outside, with plain files.</b></p>
 
-![Testing code: tests/test_refund.py, run with pytest, 42 passed. Testing agents with OES: evals/refund.eval.yaml, run with oes run, passed.](docs/code-vs-agents.svg)
+OES evals are YAML files in your repo. A runner sends each test to your agent through a command or a URL, checks what comes back (the reply, the tools it called, its final state) and tells you whether it passed. Your agent doesn't change, and it can be written in any language and use any model provider.
 
-Code has had this for years: tests are files in your repo, one command runs them, and CI fails when they fail. Agent evals usually live in a dashboard, a notebook or a one-off script instead. OES gives agents the same thing code has: eval files your teammates can read, review and run again whenever the prompt or model changes.
+![An eval file in your repo goes to oes run, which calls your agent through a command or URL, checks the tool calls, final state and reply, and passes or fails.](docs/outside-in.svg)
 
-Every test case is one of two kinds:
+```yaml
+# evals/refund-agent.eval.yaml
+oes: 1
+name: refund-agent
+target: {command: "python agent.py"}          # or {http: "http://localhost:8000/eval"}
+scorers:                                       # the names are your own choice
+  - {name: refunds, check: tool_called, pass: {each: 1}}
+  - {name: order-refunded, check: equals, pass: {each: 1}}
+  - {name: never-deletes, check: tool_not_called, pass: {each: 1}}
+  - {name: says-timeline, check: reply_contains, pass: {mean: 0.9}}
+cases:
+  - id: damaged-item
+    input:
+      message: "My order 1042 arrived broken. Can I get my money back?"
+      state: {orders: {"1042": {total: 20, status: delivered}}}
+    expected:                                  # what each scorer expects
+      refunds: [{name: refund, args: {order_id: "1042", amount: 20}}]
+      order-refunded: {state.orders.1042.status: refunded}
+      never-deletes: [delete_order]
+      says-timeline: ["5 business days"]
+```
+
+With a second case, `wrong-order`, that the agent gets wrong:
+
+```console
+$ oes run evals/refund-agent.eval.yaml
+refund-agent: failed
+  refunds: value=0.5 passed=False failing=['wrong-order']
+  order-refunded: value=0.5 passed=False failing=['wrong-order']
+  never-deletes: value=0.5 passed=False failing=['wrong-order']
+  says-timeline: value=0.5 passed=False failing=['wrong-order']
+```
+
+## Why OES
+
+- **Your agent stays as it is.** It's tested from the outside, through a command or a URL, so it can be Python, TypeScript, Go, a CLI or a deployed service. There's no SDK to import.
+- **Checks you can trust.** Code checks come first: the right tool with the right arguments, the final state, an exact value. LLM judges are there for what code can't check, and they answer pass or fail. A test that couldn't run is reported as not evaluated, never as a pass.
+- **Your coding agent can write them.** The format is small, has a schema and comes with a skill. Ask your coding agent to "add OES evals to this project".
+- **Plain files, not a platform.** Any conforming runner can run them. The Python and TypeScript runners pass the same [conformance suite](conformance/), and results are plain JSON you can send wherever you like.
+
+## Single-turn and multi-turn
 
 | Kind | What it does |
 |---|---|
-| **Single-turn** | Calls the agent once. Ask a question, label a ticket, extract a PDF. |
+| **Single-turn** | Calls the agent once. Answer a question, label a ticket, extract a PDF. |
 | **Multi-turn** | Calls it several times in a row, with fixed inputs or an AI playing the user. A coding task with follow-ups, a support chat. |
-
-![Open Eval Standard flow](docs/oes-diagram.svg)
-
-```yaml
-oes: 1
-name: capitals
-target: {http: "http://localhost:8000/eval"}   # where to reach your agent
-scorers:
-  - {name: knows-capital, check: reply_contains, pass: {mean: 0.9}}   # any name you like
-cases:
-  - id: france
-    input:
-      message: What is the capital of France?
-    expected:
-      knows-capital: [Paris]     # under the scorer's name: the reply must mention Paris
-```
 
 ## Run it
 
 ```bash
-uvx --from "git+https://github.com/bassimeledath/open-eval-standard#subdirectory=runners/python" oes run evals/capitals.eval.yaml
+uvx --from "git+https://github.com/bassimeledath/open-eval-standard#subdirectory=runners/python" oes run evals/refund-agent.eval.yaml
 ```
 
-It exits 0 when the eval passes and 1 when it doesn't, so it drops straight into CI. Results go to `.oes/runs/`. There's also a [TypeScript runner](runners/typescript/). Both pass the same [conformance suite](conformance/). Evals with an LLM judge or a simulated user need `OES_LLM_COMMAND`, a small script that calls whichever model you use ([example](runners/python/README.md#the-llm-command)).
+It exits 0 when the eval passes and 1 when it doesn't, so it drops straight into CI. Results go to `.oes/runs/`. There's also a [TypeScript runner](runners/typescript/). Evals with an LLM judge or a simulated user need `OES_LLM_COMMAND`, a small script that calls whichever model you use ([example](runners/python/README.md#the-llm-command)).
 
 ## Use it with a coding agent
 
@@ -47,11 +76,13 @@ npx skills add bassimeledath/open-eval-standard
 
 Or copy `skills/oes/` into your agent's skills folder.
 
-## I use Braintrust/LangSmith/Langfuse/Arize/&lt;any-of-the-other-million-ones&gt;, why do I even need this?
+## How it fits with pytest, DeepEval and eval platforms
 
-OES doesn't replace them; it works alongside them. Those tools are great at storing runs, showing traces and comparing results. OES is about the evals themselves: your test cases and grading rules live as plain files in your repo instead of inside one tool's SDK or UI, so any runner can run them, your coding agent can write them, and your teammates can review them in a pull request.
+They do different jobs, and work well together.
 
-For example, you write `refund-agent.eval.yaml` once, run it in CI on every pull request, and send each run's rows to Braintrust to look at the traces. If you move to Langfuse next year, the eval file doesn't change.
+- **pytest or DeepEval** are for tests in your code: call a Python function and check what it returns.
+- **OES** tests the whole agent from the outside, the way Hurl tests an HTTP API: the running agent, in any language, with tests that live as plain files.
+- **Braintrust, LangSmith, Langfuse and the rest** are for storing runs and looking at traces. Keep using them. With OES your eval definitions stay in your repo, so they don't change when you switch platforms.
 
 ## Read more
 

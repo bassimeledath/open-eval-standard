@@ -26,6 +26,8 @@ There are five.
 
 ## How a run works
 
+![An eval file goes to the runner, which calls your agent through a command or HTTP, scores the output with code checks and LLM judges, and writes the result.](docs/oes-diagram.svg)
+
 1. The runner reads the eval file.
 2. For each test case, it sends the input to the agent and collects the output. For a multi-turn case, it keeps going turn by turn.
 3. It scores each try with every scorer.

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="210" viewBox="0 0 1000 210" role="img" aria-labelledby="oi-title oi-desc">
+  <title id="oi-title">How OES tests an agent</title>
+  <desc id="oi-desc">An eval file in your repo goes to oes run, which calls your agent, unchanged and in any language, through a command or URL. It checks what comes back, such as the tool calls, the final state and the reply, and passes or fails, so CI can gate on it.</desc>
+
+  <defs>
+    <style>
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .title { font-size: 14px; font-weight: 600; fill: #0f172a; }
+      .sub { font-size: 11.5px; fill: #64748b; }
+      .code { font-size: 12px; fill: #0f172a; }
+      .check { font-size: 12px; fill: #334155; }
+      .tick { font-size: 12px; font-weight: 700; fill: #15803d; }
+      .edge { font-size: 11px; fill: #64748b; }
+      .ok { font-size: 14px; font-weight: 600; fill: #15803d; }
+    </style>
+    <marker id="oi-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 1 1.5 L 8.5 5 L 1 8.5 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="999" height="209" rx="12" fill="#ffffff" stroke="#e5e7eb"/>
+
+  <!-- 1. Eval file -->
+  <rect x="20" y="40" width="200" height="130" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="36" y="66" class="sans title">Eval file</text>
+  <text x="36" y="84" class="sans sub">in your repo</text>
+  <text x="36" y="118" class="mono code">evals/</text>
+  <text x="52" y="138" class="mono code">refund.eval.yaml</text>
+
+  <line x1="228" y1="105" x2="266" y2="105" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#oi-arrow)"/>
+
+  <!-- 2. oes run -->
+  <rect x="272" y="80" width="110" height="50" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="327" y="110" text-anchor="middle" class="mono title">oes run</text>
+
+  <!-- 3. Your agent, from the outside -->
+  <line x1="390" y1="96" x2="428" y2="96" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#oi-arrow)"/>
+  <line x1="432" y1="116" x2="394" y2="116" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#oi-arrow)"/>
+  <rect x="436" y="40" width="200" height="130" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="536" y="78" text-anchor="middle" class="sans title">Your agent</text>
+  <text x="536" y="100" text-anchor="middle" class="sans sub">unchanged, any language</text>
+  <text x="536" y="118" text-anchor="middle" class="sans sub">called by a command or URL</text>
+  <text x="536" y="146" text-anchor="middle" class="mono sub">JSON in, JSON out</text>
+
+  <line x1="644" y1="105" x2="682" y2="105" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#oi-arrow)"/>
+
+  <!-- 4. Checks -->
+  <rect x="688" y="40" width="160" height="130" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="704" y="66" class="sans title">Checks</text>
+  <text x="704" y="94" class="sans tick">✓</text><text x="720" y="94" class="sans check">right tool, right args</text>
+  <text x="704" y="116" class="sans tick">✓</text><text x="720" y="116" class="sans check">final state</text>
+  <text x="704" y="138" class="sans tick">✓</text><text x="720" y="138" class="sans check">the reply</text>
+  <text x="704" y="160" class="sans sub">LLM judge if needed</text>
+
+  <line x1="856" y1="105" x2="884" y2="105" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#oi-arrow)"/>
+
+  <!-- 5. Result -->
+  <rect x="890" y="80" width="90" height="50" rx="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <text x="935" y="104" text-anchor="middle" class="sans ok">✓ pass</text>
+  <text x="935" y="121" text-anchor="middle" class="sans sub">CI-ready</text>
+</svg>
