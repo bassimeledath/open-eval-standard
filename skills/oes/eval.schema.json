@@ -57,6 +57,12 @@
         "scope": {"required": ["check"], "properties": {"check": {"$ref": "#/$defs/endpoint"}}},
         "params": {"required": ["check"], "properties": {"check": {"$ref": "#/$defs/endpoint"}}}
       },
+      "if": {"anyOf": [
+        {"required": ["check"], "properties": {"check": {"enum": ["latency_p95_ms", "cost_per_trial_usd"]}}},
+        {"required": ["scope"], "properties": {"scope": {"const": "run"}}}
+      ]},
+      "then": {"properties": {"pass": {"propertyNames": {"enum": ["min", "max"]}}}},
+      "else": {"properties": {"pass": {"propertyNames": {"enum": ["each", "mean"]}}}},
       "properties": {
         "name": {"$ref": "#/$defs/name"},
         "check": {"oneOf": [{"$ref": "#/$defs/builtin_check"}, {"$ref": "#/$defs/endpoint"}]},

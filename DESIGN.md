@@ -217,7 +217,7 @@ status: passed                   # passed, failed, error or not_evaluated
 scores:
   right-queue: {value: 0.95, passed: true, failing_cases: [reset-email]}
   fast: {value: 1800, passed: true}                     # a run scorer
-latency_ms: {p50: 640, p95: 1800}
+latency_ms: {p50: 640, p95: 1800}   # nearest-rank, over every turn
 cost_usd: {agent: 0.002, judges: 0.0, user: 0.0}
 cases: {total: 20, errored: []}
 ```
@@ -227,10 +227,11 @@ cases: {total: 20, errored: []}
 ```yaml
 case_id: charged-twice
 trial: 1
+session_id: 7f3a
 tags: [smoke]                     # the test case's
 input: { ... }
 expected: { ... }
-output: {transcript: [ ... ], tool_calls: [ ... ], data: {queue: billing}, state: {}}   # each tool call has its turn
+output: {transcript: [ ... ], tool_calls: [ ... ], turns: [ ... ], data: {queue: billing}, state: {}}   # turns: every response, in order
 scores: {right-queue: {score: 1, reason: null}}       # plus value, if a check sent one
 latency_ms: [640]                # one per turn
 cost_usd: 0.002

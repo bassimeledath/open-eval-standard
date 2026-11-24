@@ -4,6 +4,7 @@ description: The agent refunds only orders that qualify, using the right tools.
 target: {http: "http://localhost:8000/eval"}
 scorers:                       # scorer names are your own choice
   - {name: refunds, check: tool_called, pass: {each: 1}}
+  - {name: refund-went-through, check: equals, pass: {each: 1}}   # calling the tool isn't enough
   - {name: never-deletes, check: tool_not_called, pass: {each: 1}}
   - {name: says-timeline, check: reply_contains, pass: {mean: 0.9}}
   - {name: no-promises, check: reply_not_contains, pass: {each: 1}}
@@ -14,6 +15,7 @@ cases:
       state: {orders: {"1042": {total: 20, status: delivered}}}
     expected:
       refunds: [{name: refund, args: {order_id: "1042", amount: 20}}]
+      refund-went-through: {tool_calls.0.result.ok: true, state.orders.1042.status: refunded}
       never-deletes: [delete_order]
       says-timeline: ["5 business days"]
       no-promises: ["guaranteed", "instantly"]

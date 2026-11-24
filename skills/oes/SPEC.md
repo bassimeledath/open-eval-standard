@@ -73,7 +73,7 @@ Response. Every field is optional:
 
 A message is `{role, content}`, with `role` of `user` or `assistant`. `content` is text, or a list of parts: `{type: text, text}` or `{type: file, path, mime}` for images, audio and documents.
 
-A file can also go anywhere in `data`, at any depth, as the same `{type: file, path, mime}` object. `path` can be a file or a folder, and `mime` is optional. Each trial gets its own copy, and the runner sends its absolute path, so an agent can change it freely. An agent that changes files, such as a coding agent, returns where its work is in `data`, for example `{repo: /tmp/run-1/todo-app}`, so checks can read it.
+A file can also go anywhere in `data`, at any depth, as the same `{type: file, path, mime}` object. `path` can be a file or a folder, and `mime` is optional. Each trial gets its own copy, and the runner sends its absolute path, so an agent can change it freely. This assumes the target can read the runner's files: the same machine, or a shared folder or volume. For a remote target, put a URL in `data` instead. An agent that changes files, such as a coding agent, returns where its work is in `data`, for example `{repo: /tmp/run-1/todo-app}`, so checks can read it.
 
 ## 5. Test cases
 
@@ -148,10 +148,12 @@ Built-in checks:
 | `reply_not_contains` | Trial | Texts: `[password, guaranteed]` | None of the texts appears in any agent reply. |
 | `tool_called` | Trial | Tool names, or `{name, args}`: `[{name: refund, args: {amount: 20}}]` | Each listed tool was called at least once. Listed args must match; others are ignored. |
 | `tool_not_called` | Trial | Tool names: `[delete_account]` | None of the listed tools was called. |
-| `latency_p95_ms` | Run | None | Returns the 95th percentile of turn latency, in milliseconds. |
+| `latency_p95_ms` | Run | None | Returns the 95th percentile of turn latency, in milliseconds (see 8). |
 | `cost_per_trial_usd` | Run | None | Returns the mean cost of one trial, in US dollars. |
 
-A trial check scores 1 or 0. `reply_contains` and `reply_not_contains` ignore case. `equals` and `tool_called` match exactly. An output path is dot-separated and starts with `reply`, `data`, `state` or `tool_calls`: `data.queue`, `state.handed_off` or `tool_calls.0.name`. `reply`, `data` and `state` are what the agent returned on its last turn; `tool_calls` lists every turn's calls, in order. A missing path never equals a value, not even `null`.
+A trial check scores 1 or 0. `reply_contains` and `reply_not_contains` ignore case. `equals` and `tool_called` match exactly. An output path is dot-separated and starts with `reply`, `data`, `state`, `tool_calls` or `turns`: `data.queue`, `state.handed_off`, `tool_calls.0.name` or `turns.0.data.queue`. `reply`, `data` and `state` are what the agent returned on its last turn; `tool_calls` lists every turn's calls, in order; `turns` lists every response the target gave, in order, so a check can read any turn. A missing path never equals a value, not even `null`.
+
+Put custom check scripts in a `checks/` folder next to the eval file, so `eval_hash` covers them.
 
 A custom check is a command or URL that uses the same JSON in and out as the target:
 
@@ -198,10 +200,10 @@ A runner may also send the same rows to an eval platform. The local files are th
 | `tags`, `metadata` | Copied from the eval. |
 | `agent_version` | A label for the agent version under test, such as a git commit. |
 | `models` | Every model that the run used, by role: `agent`, `judge`, `user`. Whatever names the runner knows. |
-| `eval_hash` | SHA-256 over every file the eval uses: the eval file, its cases file, its judge files and its `{type: file}` inputs, hashed in path order. A runner may add custom check scripts. |
+| `eval_hash` | SHA-256 over every file the eval uses: the eval file, its cases file, its judge files, its `{type: file}` inputs and the `checks/` folder, hashed in path order. Changing a test, a grader or an input changes the hash. A URL check is recorded by its URL only. |
 | `status` | `passed`, `failed`, `error` or `not_evaluated`. |
 | `scores` | Per scorer: `value` (the mean, or the run number), `passed` (true, false or null if no pass rule), `failing_cases`, and `reason` from a run scorer. |
-| `latency_ms` | p50 and p95 of one turn. |
+| `latency_ms` | p50 and p95 of one turn, over every turn of the run. Percentiles use the nearest-rank method: the smallest value at or above that share of turns. |
 | `cost_usd` | Mean cost of one trial, for the `agent`, the `judges` and the simulated `user`. |
 | `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored. |
 
@@ -216,7 +218,7 @@ Status, in order:
 
 `failing_cases` lists the test cases that fall short on a trial scorer: a case with any trial below `x` for `{each: x}`, a case whose trials average below `x` for `{mean: x}`, or a case with any trial below 1 when the scorer has no pass rule. Run scorers have no `failing_cases`.
 
-Each row in `rows.jsonl` has `case_id`, `trial`, `tags` (the test case's), `input`, `expected`, `output` (the `transcript`, `tool_calls` each with the `turn` it happened on, counting from 1, and the last `reply`, `data` and `state`), `scores` (per scorer: `score`, `reason` and any `value`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
+Each row in `rows.jsonl` has `case_id`, `trial`, `session_id`, `tags` (the test case's), `input`, `expected`, `output` (the `transcript`, `tool_calls` each with the `turn` it happened on, counting from 1, `turns` with every response the target gave, and the last `reply`, `data` and `state`), `scores` (per scorer: `score`, `reason` and any `value`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
 
 Scorers read only the logged rows. A custom check gets `input` and `output` in this same shape, with file paths made absolute. So a runner can re-score a saved run without calling the agent again.
 
