@@ -47,8 +47,6 @@ Or copy `skills/oes/` into your agent's skills folder.
 - [Spec](skills/oes/SPEC.md): the full format.
 - [Examples](skills/oes/examples/): a coding agent, invoice extraction, a ticket classifier, a refund agent with tools, and a support chat with a simulated user.
 
-## Status
+## License
 
-Draft. The standard may change before version 1 is final.
-
-MIT license.
+MIT
