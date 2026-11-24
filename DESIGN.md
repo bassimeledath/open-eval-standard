@@ -52,18 +52,23 @@ Every test case uses the same fields. What you put in the input decides how it r
 
 **Each scorer reads its own expectations.** In a test case, `expected` has one entry per scorer, under the scorer's name. So one eval can have several scorers of the same kind, each with its own pass rule.
 
-**One run stands alone.** A result describes one run of one version of the agent. To compare two versions, compare their results, but only when the eval and the judges are the same in both.
+**One run stands alone.** A result describes one run of one version of the agent. To compare two versions, compare their results, but only when the eval, the judges and the runner are the same in both.
 
 **Not evaluated is not a pass.** If something didn't run, the result says so. Nothing is allowed to turn that into a pass.
 
 **An eval must be able to fail.** Before trusting an eval, run it once against an agent that returns nothing. If it still passes, it isn't testing anything.
 
+**Gaps show.** Unknown cost is `null`, not zero. The result counts how many trials each scorer actually scored and skipped. A check that can't run is rejected, never scored as a failure.
+
+**Runners agree, or they don't conform.** The spec pins down how a runner behaves, not just what the files look like: how it calls the agent, retries, copies files, compares values and hashes the eval. A shared conformance suite checks it, and the Python and TypeScript reference runners both pass it.
+
 ## Left out on purpose
 
-- **A runner.** The format comes first. A coding agent can write a small runner for any project from the spec, and a shared one can come later.
 - **Voice-specific fields** like interruptions or background noise. Voice agents that work turn by turn fit already. The rest can live in `metadata` until there's a clear pattern.
 - **A list of every eval across projects**, and **a record of whether a change was adopted.** Useful for teams, but not needed to test one agent.
 - **Side-by-side judging**, where a judge sees two versions' outputs at once. It needs care to be fair, and it can be added later.
+- **Evals with no pass rule at all**, for benchmarks that only measure. For now, give one scorer a loose pass rule; the others can have none.
+- **Auth headers for HTTP targets.** Run the agent locally, or put a local proxy in front of it.
 
 ## How it grows
 
@@ -206,8 +211,9 @@ These follow from the shapes above. They're short enough to list here.
 
 ```yaml
 eval: ticket-triage
-run_id: 2026-11-23-a1b2
+run_id: 20261123T213000Z-a1b2c3
 started_at: "2026-11-23T21:30:00Z"
+runner: {name: oes-python, version: 0.1.0}
 tags: []                         # copied from the eval, with metadata
 agent_version: a1b2c3d             # for example a git commit
 metadata: {}
@@ -215,10 +221,10 @@ models: {agent: "...", judge: "...", user: "..."}
 eval_hash: "sha256:..."          # changes when the eval, a judge or an input file changes
 status: passed                   # passed, failed, error or not_evaluated
 scores:
-  right-queue: {value: 0.95, passed: true, failing_cases: [reset-email]}
-  fast: {value: 1800, passed: true}                     # a run scorer
+  right-queue: {value: 0.95, passed: true, scored: 20, skipped: 0, failing_cases: [reset-email]}
+  fast: {value: 1800, passed: true, reason: null}       # a run scorer
 latency_ms: {p50: 640, p95: 1800}   # nearest-rank, over every turn
-cost_usd: {agent: 0.002, judges: 0.0, user: 0.0}
+cost_usd: {agent: 0.002, judges: null, user: null}   # null: unknown, or not used
 cases: {total: 20, errored: []}
 ```
 
@@ -228,19 +234,22 @@ cases: {total: 20, errored: []}
 case_id: charged-twice
 trial: 1
 session_id: 7f3a
+attempts: 1                      # 2 or more if it was retried
 tags: [smoke]                     # the test case's
 input: { ... }
 expected: { ... }
 output: {transcript: [ ... ], tool_calls: [ ... ], turns: [ ... ], data: {queue: billing}, state: {}}   # turns: every response, in order
 scores: {right-queue: {score: 1, reason: null}}       # plus value, if a check sent one
 latency_ms: [640]                # one per turn
-cost_usd: 0.002
-error: null                      # or {kind: target, message: "..."}
+cost_usd: {agent: 0.002, judges: null, user: null}
+# error: {kind: target, message: "..."}   only if it errored
 ```
 
 ## Where things are
 
 - `skills/oes/SPEC.md`: the full format.
-- `skills/oes/eval.schema.json`: checks that an eval file is valid.
+- `skills/oes/eval.schema.json`, `judge.schema.json`, `result.schema.json`: check eval files, judge files and results.
 - `skills/oes/examples/`: a coding agent, invoice extraction, a ticket classifier, a refund agent with tools, and a support chat with a simulated user.
 - `skills/oes/SKILL.md`: the instructions a coding agent follows to add evals to a project.
+- `runners/python/`, `runners/typescript/`: the reference runners.
+- `conformance/`: the tests every runner must pass.

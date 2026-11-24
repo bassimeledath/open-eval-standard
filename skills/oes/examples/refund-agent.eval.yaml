@@ -15,7 +15,7 @@ cases:
       state: {orders: {"1042": {total: 20, status: delivered}}}
     expected:
       refunds: [{name: refund, args: {order_id: "1042", amount: 20}}]
-      refund-went-through: {tool_calls.0.result.ok: true, state.orders.1042.status: refunded}
+      refund-went-through: {state.orders.1042.status: refunded}   # the order's final state, whatever tools ran first
       never-deletes: [delete_order]
       says-timeline: ["5 business days"]
       no-promises: ["guaranteed", "instantly"]
