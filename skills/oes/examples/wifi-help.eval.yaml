@@ -5,7 +5,7 @@ target: {http: "http://localhost:8000/eval"}
 trial_count: 3
 scorers:                       # scorer names are your own choice
   - {name: solved, judge: goal-completion, pass: {mean: 0.8}}
-  - {name: no-handoff, check: equals, pass: {each: 1}}
+  - {name: no-handoff, check: equals, pass: {each: 1}}   # each: 1 over 3 tries is pass^3: every try must pass
 cases:
   - id: laptop-after-update
     input:

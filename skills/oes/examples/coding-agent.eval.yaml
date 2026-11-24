@@ -2,10 +2,16 @@ oes: 1
 name: coding-agent
 description: The agent makes a change to a small repo, then follows up, and the repo's tests pass.
 target: {command: "python -m agent.eval_entry", timeout_s: 900}
+trial_count: 5                 # five tries per test case
 scorers:                       # scorer names are your own choice
   - name: tests-pass
     check: {command: "python evals/checks/run_tests.py"}   # runs the tests in output.data.repo
     pass: {mean: 0.8}
+  - name: tests-pass-at-5         # pass@5: share of cases where at least one try passed
+    check: {command: "python evals/checks/pass_at_k.py"}   # reads tests-pass scores from the rows
+    scope: run
+    params: {scorer: tests-pass, mode: any}   # mode: all gives a pass^5 rate instead
+    pass: {min: 0.9}
   - {name: no-risky-git, check: tool_not_called, pass: {each: 1}}
   - {name: cost, check: cost_per_trial_usd, pass: {max: 0.50}}
 cases:
