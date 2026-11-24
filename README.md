@@ -1,8 +1,10 @@
 # Open Eval Standard (OES)
 
-A dead simple standard for testing AI agents. Plain YAML files, any language, any model provider.
+OES is a plain file format for testing AI apps. Each test says what to give your app, what you expect it to do, and how to tell whether it passed. You can use any language or model provider.
 
-![Open Eval Standard flow](docs/oes-diagram.svg)
+![An engineer reports a 94% score. A colleague asks to run the same evals. They need the script, the spreadsheet, a Slack thread from March, and Dave, who is chained to his laptop.](docs/on-my-eval.jpg)
+
+A score like 94% is easier to interpret when you can see the tests behind it. With OES, those tests live in your repo as YAML files that teammates can read, review, and run again when the prompt or model changes.
 
 Every test case is one of two kinds:
 
@@ -24,6 +26,8 @@ cases:
     expected:
       knows-capital: [Paris]     # under the scorer's name: the reply must mention Paris
 ```
+
+![Open Eval Standard flow](docs/oes-diagram.svg)
 
 ## Use it with a coding agent
 
