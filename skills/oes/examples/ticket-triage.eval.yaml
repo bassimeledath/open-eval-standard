@@ -1,6 +1,6 @@
 oes: 1
 name: ticket-triage
-description: The app sends each support ticket to the right queue, quickly.
+description: The agent sends each support ticket to the right queue, quickly.
 target: {command: "python -m triage.eval_entry"}
 scorers:
   - {name: right-queue, check: equals, pass: {mean: 0.9}}

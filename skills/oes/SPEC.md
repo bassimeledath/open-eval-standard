@@ -4,29 +4,29 @@ Version 1, draft 3.
 
 ## 1. Purpose
 
-The Open Eval Standard (OES) is a standard way to write evals of AI apps, as plain files. An eval says what to send the app, what to expect back and how to score it. Any runner that follows this spec can run any eval written to it, in any language, with any model provider.
+The Open Eval Standard (OES) is a standard way to write evals of AI agents, as plain files. An eval says what to send the agent, what to expect back and how to score it. Any runner that follows this spec can run any eval written to it, in any language, with any model provider.
 
-The app does not change how it is built. It exposes one entry point, the target, that the runner calls.
+An agent here is any AI system that takes an input and replies or acts: a chatbot, an assistant that uses tools, a coding agent, or a single model call. The agent does not change how it is built. It exposes one entry point, the target, that the runner calls.
 
 ## 2. Terms
 
 | Term | Meaning |
 |---|---|
-| Eval | A named group of test cases for one app, plus how to call the app and how to score it. One file. |
+| Eval | A named group of test cases for one agent, plus how to call the agent and how to score it. One file. |
 | Test case | One input, with what we expect. |
-| Target | The app entry point the runner calls. |
-| Turn | One call to the target: the user speaks, the app replies. |
+| Target | The agent entry point the runner calls. |
+| Turn | One call to the target: the user speaks, the agent replies. |
 | Transcript | Every message in a test case's conversation, in order. |
-| State | Data the app carries from one turn to the next. |
+| State | Data the agent carries from one turn to the next. |
 | Scorer | Gives a trial a score from 0 to 1. A check runs code. A judge asks an LLM. |
 | Trial | One attempt at one test case. A test case can run several trials. |
-| Run | One execution of one eval on one version of the app. |
+| Run | One execution of one eval on one version of the agent. |
 | Result | What a run produced: scores, status, cost and latency. |
 | Runner | The program that reads eval files, calls the target, scores the output and writes the result. |
 
 ## 3. The eval file
 
-Write one eval per file, named `<name>.eval.yaml`, in an `evals/` folder in the app's repository. The eval does not name the model or the app version. The run supplies them, so the same eval runs on every version of the app.
+Write one eval per file, named `<name>.eval.yaml`, in an `evals/` folder in the agent's repository. The eval does not name the model or the agent version. The run supplies them, so the same eval runs on every version of the agent.
 
 Names of evals, scorers and judges use lowercase letters, digits, hyphens and underscores. Paths in an eval file, and in its cases file, are relative to the eval file.
 
@@ -34,7 +34,7 @@ Names of evals, scorers and judges use lowercase letters, digits, hyphens and un
 |---|---|---|
 | `oes` | Yes | The spec version. Use `1`. |
 | `name` | Yes | Unique in the repository. |
-| `target` | Yes | How to call the app. See 4. |
+| `target` | Yes | How to call the agent. See 4. |
 | `scorers` | Yes | How to score. See 6. At least one scorer has a `pass` rule. |
 | `cases` | Yes | A list of test cases, or a JSONL file of them: `{file: cases.jsonl}`. |
 | `description` | No | One sentence on what the eval checks. |
@@ -47,7 +47,7 @@ The target is one of:
 
 | Form | Meaning |
 |---|---|
-| `{command: "python -m app.eval_entry"}` | The runner starts the command for each turn, writes the request as JSON to stdin and reads the response as JSON from stdout. |
+| `{command: "python -m agent.eval_entry"}` | The runner starts the command for each turn, writes the request as JSON to stdin and reads the response as JSON from stdout. |
 | `{http: "http://localhost:8000/eval"}` | The runner POSTs the request as JSON and reads the response as JSON. |
 
 Either form can add `timeout_s`, the most seconds one call may take, such as `{command: "...", timeout_s: 600}`. Without it, the runner's default applies.
@@ -59,17 +59,17 @@ Request:
 | `session_id` | A new id for each trial. The same id for every turn of one trial. |
 | `messages` | The transcript so far. The last item is the newest user message. |
 | `data` | The test case's `input.data`, or `{}`. |
-| `state` | On the first turn, the test case's `input.state`. After that, the `state` the app returned on the turn before. `{}` if neither. |
+| `state` | On the first turn, the test case's `input.state`. After that, the `state` the agent returned on the turn before. `{}` if neither. |
 
 Response. Every field is optional:
 
 | Field | Meaning |
 |---|---|
-| `reply` | The app's reply for this turn. |
+| `reply` | The agent's reply for this turn. |
 | `data` | Structured output for this turn, such as a label or an extracted record. |
-| `tool_calls` | Each tool the app called this turn: `{name, args}`, plus `result` or `error` if known. |
-| `state` | The app's state after this turn. The runner sends it back on the next turn, so the target can be stateless. |
-| `cost_usd` | What this turn cost, if the app knows. |
+| `tool_calls` | Each tool the agent called this turn: `{name, args}`, plus `result` or `error` if known. |
+| `state` | The agent's state after this turn. The runner sends it back on the next turn, so the target can be stateless. |
+| `cost_usd` | What this turn cost, if the agent knows. |
 
 A message is `{role, content}`, with `role` of `user` or `assistant`. `content` is text, or a list of parts: `{type: text, text}` or `{type: file, path, mime}` for images, audio and documents.
 
@@ -78,7 +78,7 @@ A message is `{role, content}`, with `role` of `user` or `assistant`. `content` 
 | Field | Required | Meaning |
 |---|---|---|
 | `id` | Yes | Unique inside the eval. |
-| `input` | Yes | What the app receives. |
+| `input` | Yes | What the agent receives. |
 | `expected` | No | What each scorer expects, keyed by scorer name. See 6. |
 | `tags`, `metadata` | No | Free labels and fields. |
 
@@ -87,9 +87,9 @@ A message is `{role, content}`, with `role` of `user` or `assistant`. `content` 
 | Field | Meaning |
 |---|---|
 | `message` | One user message. Short for `messages: [{role: user, content: ...}]`. |
-| `messages` | The conversation so far. Use it to start at any point of a real conversation. To have the app speak first, start with an `assistant` message. |
-| `data` | Any other JSON the app receives. An app with no conversation uses only `data`. |
-| `state` | The app's state before the first turn. |
+| `messages` | The conversation so far. Use it to start at any point of a real conversation. To have the agent speak first, start with an `assistant` message. |
+| `data` | Any other JSON the agent receives. An agent with no conversation uses only `data`. |
+| `state` | The agent's state before the first turn. |
 | `script` | Fixed user lines, sent one per turn after `message` or `messages`. |
 | `persona` | A simulated user, in plain text: who they are, what they want, what they know and when they stop. |
 | `max_turns` | Required with `script` or `persona`. The most turns the runner will run. |
@@ -136,14 +136,14 @@ Built-in checks:
 | Check | Scope | Expected entry | Scores 1 when |
 |---|---|---|---|
 | `equals` | Trial | Output paths and values: `{data.queue: billing, state.handed_off: false}` | Every path has exactly that value. |
-| `reply_contains` | Trial | Texts: `[refund, 5 days]` | Each text appears in at least one app reply. |
-| `reply_not_contains` | Trial | Texts: `[password, guaranteed]` | None of the texts appears in any app reply. |
+| `reply_contains` | Trial | Texts: `[refund, 5 days]` | Each text appears in at least one agent reply. |
+| `reply_not_contains` | Trial | Texts: `[password, guaranteed]` | None of the texts appears in any agent reply. |
 | `tool_called` | Trial | Tool names, or `{name, args}`: `[{name: refund, args: {amount: 20}}]` | Each listed tool was called at least once. Listed args must match; others are ignored. |
 | `tool_not_called` | Trial | Tool names: `[delete_account]` | None of the listed tools was called. |
 | `latency_p95_ms` | Run | None | Returns the 95th percentile of turn latency, in milliseconds. |
 | `cost_per_trial_usd` | Run | None | Returns the mean cost of one trial, in US dollars. |
 
-A trial check scores 1 or 0. Text matching ignores case. An output path is dot-separated: `data.queue`, `state.handed_off` or `tool_calls.0.name`. `data` and `state` are what the app returned on its last turn. A missing path never equals a value, not even `null`.
+A trial check scores 1 or 0. Text matching ignores case. An output path is dot-separated: `data.queue`, `state.handed_off` or `tool_calls.0.name`. `data` and `state` are what the agent returned on its last turn. A missing path never equals a value, not even `null`.
 
 A custom check is a command or URL that uses the same JSON in and out as the target:
 
@@ -176,7 +176,7 @@ Prefer two choices. They are easier to agree on and to check against human label
 
 ## 8. The result
 
-Each run writes a folder, `.oes/runs/<run_id>/`, in the app's repository:
+Each run writes a folder, `.oes/runs/<run_id>/`, in the agent's repository:
 
 - `result.json`: the result of the run.
 - `rows.jsonl`: one row per trial.
@@ -189,13 +189,13 @@ A runner may also send the same rows to an eval platform. The local files are th
 |---|---|
 | `eval`, `run_id`, `started_at` | The eval, a unique run id and when the run started. |
 | `tags`, `metadata` | Copied from the eval. |
-| `app_version` | A label for the app version under test, such as a git commit. |
-| `models` | Every model that the run used, by role: `app`, `judge`, `user`. Whatever names the runner knows. |
+| `agent_version` | A label for the agent version under test, such as a git commit. |
+| `models` | Every model that the run used, by role: `agent`, `judge`, `user`. Whatever names the runner knows. |
 | `eval_hash` | SHA-256 of the eval file, its cases file and its judge files. |
 | `status` | `passed`, `failed`, `error` or `not_evaluated`. |
 | `scores` | Per scorer: `value` (the mean, or the run number), `passed` (true, false or null if no pass rule), and `failing_cases`. |
 | `latency_ms` | p50 and p95 of one turn. |
-| `cost_usd` | Mean cost of one trial, for the app and for the judges. |
+| `cost_usd` | Mean cost of one trial, for the agent and for the judges. |
 | `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored. |
 
 Status, in order:
@@ -211,15 +211,15 @@ Status, in order:
 
 Each row in `rows.jsonl` has `case_id`, `trial`, `tags` (the test case's), `input`, `expected`, `output` (the `transcript`, `tool_calls` each with the `turn` it happened on, and the last `data` and `state`), `scores` (per scorer: `score`, `reason` and any `value`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
 
-Scorers read only the logged rows. So a runner can re-score a saved run without calling the app again.
+Scorers read only the logged rows. So a runner can re-score a saved run without calling the agent again.
 
 ### 8.1 Errors
 
-A trial can fail for a reason outside the app's logic: the target crashes, a judge or the simulated user breaks, or a call times out. The runner retries it first. If it still fails, the row gets `error: {kind, message}`, with `kind` of `target`, `judge`, `user` or `timeout`, and no scores.
+A trial can fail for a reason outside the agent's logic: the target crashes, a judge or the simulated user breaks, or a call times out. The runner retries it first. If it still fails, the row gets `error: {kind, message}`, with `kind` of `target`, `judge`, `user` or `timeout`, and no scores.
 
 ### 8.2 Comparing runs
 
-To compare two versions of an app, run the eval on each and compare the two results. Compare runs only when they have the same `eval_hash` and the same judge and user models. Otherwise the change in score may come from the eval, not the app. A saved result can be reused as the baseline while all of these stay the same.
+To compare two versions of an agent, run the eval on each and compare the two results. Compare runs only when they have the same `eval_hash` and the same judge and user models. Otherwise the change in score may come from the eval, not the agent. A saved result can be reused as the baseline while all of these stay the same.
 
 ## 9. Rules
 

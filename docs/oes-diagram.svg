@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="248" viewBox="0 0 1000 248" role="img" aria-labelledby="oes-title oes-desc">
   <title id="oes-title">Open Eval Standard (OES) flow</title>
-  <desc id="oes-desc">An eval file defines target, scorers, and test cases with input and expected values. A runner reads the eval file, sends each input to your app via command or HTTP, scores each output with code checks and LLM judges against expected values, and applies pass rules to write result.json and rows.jsonl.</desc>
+  <desc id="oes-desc">An eval file defines target, scorers, and test cases with input and expected values. A runner reads the eval file, sends each input to your agent via command or HTTP, scores each output with code checks and LLM judges against expected values, and applies pass rules to write result.json and rows.jsonl.</desc>
 
   <defs>
     <style>
@@ -65,14 +65,14 @@
     <text x="317" y="167" text-anchor="middle" class="sans subtitle">1 or more turns</text>
   </g>
 
-  <!-- Arrow 2: Runner -> Your app -->
+  <!-- Arrow 2: Runner -> Your agent -->
   <text x="403" y="114" text-anchor="middle" class="mono arrow-label">input</text>
   <line x1="376" y1="124" x2="426" y2="124" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <!-- 3. Your app -->
+  <!-- 3. Your agent -->
   <g>
     <rect x="430" y="54" width="142" height="140" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 3"/>
-    <text x="501" y="81" text-anchor="middle" class="sans title">Your app</text>
+    <text x="501" y="81" text-anchor="middle" class="sans title">Your agent</text>
     <text x="501" y="98" text-anchor="middle" class="mono subtitle">command or HTTP</text>
     <line x1="446" y1="110" x2="556" y2="110" stroke="#e2e8f0" stroke-width="1"/>
     <text x="501" y="131" text-anchor="middle" class="sans body">Runs unchanged</text>
@@ -80,7 +80,7 @@
     <text x="501" y="172" text-anchor="middle" class="mono val">tool_calls, state</text>
   </g>
 
-  <!-- Arrow 3: Your app -> Scores -->
+  <!-- Arrow 3: Your agent -> Scores -->
   <text x="601" y="114" text-anchor="middle" class="mono arrow-label">output</text>
   <line x1="572" y1="124" x2="626" y2="124" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
 

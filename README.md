@@ -1,6 +1,6 @@
 # Open Eval Standard (OES)
 
-A simple standard for testing AI apps. Plain YAML files, any language, any model provider.
+A simple standard for testing AI agents. Plain YAML files, any language, any model provider.
 
 ![Open Eval Standard flow](docs/oes-diagram.svg)
 
@@ -20,7 +20,7 @@ cases:
 
 ## Use it with a coding agent
 
-Install the skill, then ask your agent to "add evals to this app".
+Install the skill, then ask your coding agent to "add OES evals to this project".
 
 ```bash
 npx skills add bassimeledath/open-eval-standard
