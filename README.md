@@ -5,7 +5,7 @@
   </picture>
 </p>
 
-<p align="center"><b>Test your AI agent from the outside, with plain files.</b></p>
+<p align="center"><b>Write agent evals in YAML. Run them against any agent from any provider in any language.</b></p>
 
 OES evals are YAML files in your repo. A runner sends each test to your agent through a command or a URL, checks what comes back (the reply, the tools it called, its final state) and tells you whether it passed. Your agent doesn't change, and it can be written in any language and use any model provider.
 
