@@ -1,0 +1,6 @@
+oes: 1
+name: hash-v4-nested-checks
+description: A checks folder with a subfolder.
+target: {command: "python3 agents/fake.py empty"}
+scorers: [{name: s, check: equals, pass: {each: 1}}]
+cases: [{id: a, input: {data: {}}, expected: {s: {data.q: 1}}}]

@@ -1,0 +1,22 @@
+{
+ "about": "A gating scorer that scored nothing makes the run not_evaluated.",
+ "eval": "evals/z09a-scored-nothing.eval.yaml",
+ "status": "not_evaluated",
+ "n_rows": 1,
+ "scores": {
+  "never-scores": {
+   "value": null,
+   "passed": null,
+   "scored": 0,
+   "skipped": 1,
+   "failing_cases": []
+  },
+  "fine": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ }
+}

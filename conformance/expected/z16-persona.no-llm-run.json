@@ -1,0 +1,8 @@
+{
+ "about": "A persona needs the LLM command too.",
+ "eval": "evals/z16-persona.eval.yaml",
+ "env": {
+  "OES_LLM_COMMAND": null
+ },
+ "exit": 2
+}

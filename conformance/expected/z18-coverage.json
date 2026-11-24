@@ -1,0 +1,31 @@
+{
+ "about": "A gating scorer covering one case of five passes; scored and skipped show the gap. An entry of null is no entry.",
+ "eval": "evals/z18-coverage.eval.yaml",
+ "status": "passed",
+ "n_rows": 5,
+ "scores": {
+  "right-queue": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 4,
+   "failing_cases": []
+  },
+  "no-tools": {
+   "value": 1,
+   "passed": true,
+   "scored": 5,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "rows": [
+  {
+   "case_id": "t3",
+   "trial": 1,
+   "facts": {
+    "scores.right-queue.score": null
+   }
+  }
+ ]
+}

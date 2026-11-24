@@ -1,0 +1,9 @@
+oes: 1
+name: hash-v2-graders
+description: A cases file, one judge named by two scorers, an unused judge (not hashed) and a checks folder.
+target: {command: "python3 agents/fake.py empty"}
+scorers:
+  - {name: s, check: equals, pass: {each: 1}}
+  - {name: j1, judge: used}
+  - {name: j2, judge: used}
+cases: {file: cases.jsonl}

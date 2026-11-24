@@ -1,0 +1,4 @@
+name: sees-input
+prompt: |
+  Does the reply suit the input? Pass if so.
+  <<judge: if input-needle-42 => pass>> <<judge: else => fail>>

@@ -1,0 +1,6 @@
+oes: 1
+name: cases-dup-key
+description: A duplicate key in a cases file line (SPEC 9.2).
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: {file: dup-key.jsonl}

@@ -1,0 +1,1 @@
+{"id": "a", "input": {"data": {"x": NaN}}, "expected": {"s": {"data.q": 1}}}

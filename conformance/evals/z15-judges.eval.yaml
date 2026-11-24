@@ -1,0 +1,18 @@
+oes: 1
+name: z15-judges
+description: Judges see the transcript, the input and the expected entry; choices match ignoring case; custom choices; a judge file's model wins; a fenced answer is read from the first { to the last }.
+target: {command: "python3 agents/fake.py chat"}
+scorers:
+  - {name: polite, judge: polite, pass: {mean: 1}}
+  - {name: criteria, judge: criteria}
+  - {name: shouty, judge: shouty, pass: {each: 1}}
+  - {name: graded, judge: three-way}
+  - {name: own-model, judge: own-model, pass: {each: 1}}
+  - {name: sees-input, judge: sees-input}
+  - {name: fenced, judge: fenced, pass: {each: 1}}
+cases:
+  - id: a
+    input: {message: hello, data: {note: input-needle-42}}
+    expected: {criteria: [criterion-alpha]}
+  - id: b
+    input: {message: hello}

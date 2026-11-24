@@ -1,0 +1,227 @@
+{
+ "about": "Section 4.1 errors and the last-line rule; a flaky target passes on its second attempt.",
+ "eval": "evals/z07-misbehave.eval.yaml",
+ "status": "error",
+ "n_rows": 15,
+ "cases": {
+  "total": 15,
+  "errored": [
+   "exit1",
+   "bad-json",
+   "non-object",
+   "bad-reply",
+   "bad-state",
+   "bad-tool-calls",
+   "bad-cost",
+   "bad-second-turn",
+   "slow"
+  ]
+ },
+ "scores": {
+  "ok": {
+   "value": 1,
+   "passed": true,
+   "scored": 6,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "kept-extra": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 5,
+   "failing_cases": []
+  }
+ },
+ "rows": [
+  {
+   "case_id": "ok",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error": {
+     "$absent": true
+    },
+    "scores.ok.score": 1
+   }
+  },
+  {
+   "case_id": "stdout-noise",
+   "trial": 1,
+   "facts": {
+    "error": {
+     "$absent": true
+    },
+    "scores.ok.score": 1
+   }
+  },
+  {
+   "case_id": "stderr-noise",
+   "trial": 1,
+   "facts": {
+    "error": {
+     "$absent": true
+    },
+    "scores.ok.score": 1
+   }
+  },
+  {
+   "case_id": "flaky",
+   "trial": 1,
+   "facts": {
+    "attempts": 2,
+    "error": {
+     "$absent": true
+    },
+    "scores.ok.score": 1
+   }
+  },
+  {
+   "case_id": "extra-field",
+   "trial": 1,
+   "facts": {
+    "error": {
+     "$absent": true
+    },
+    "output.turns.0.trace_id": "abc"
+   }
+  },
+  {
+   "case_id": "null-fields",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error": {
+     "$absent": true
+    },
+    "scores.ok.score": 1,
+    "output.reply": {
+     "$absent": true
+    },
+    "output.state": {
+     "$absent": true
+    },
+    "output.transcript": [],
+    "output.tool_calls": [],
+    "output.turns": [
+     {
+      "data": {
+       "ok": true
+      }
+     }
+    ],
+    "cost_usd.agent": null
+   }
+  },
+  {
+   "case_id": "bad-second-turn",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "output.turns": [
+     {
+      "data": {
+       "ok": true
+      }
+     }
+    ],
+    "output.data": {
+     "ok": true
+    },
+    "latency_ms": {
+     "$len": 1
+    }
+   }
+  },
+  {
+   "case_id": "bad-reply",
+   "trial": 1,
+   "facts": {
+    "output.turns": [],
+    "latency_ms": []
+   }
+  },
+  {
+   "case_id": "exit1",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "bad-json",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "non-object",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "bad-reply",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "bad-state",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "bad-tool-calls",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "bad-cost",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "bad-second-turn",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "target",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "slow",
+   "trial": 1,
+   "facts": {
+    "attempts": 3,
+    "error.kind": "timeout",
+    "scores": {}
+   }
+  }
+ ]
+}

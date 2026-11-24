@@ -1,0 +1,13 @@
+{
+ "about": "No judge names a model and OES_JUDGE_MODEL is unset, so models.judge is null; the user model is still recorded.",
+ "eval": "evals/z16-persona.eval.yaml",
+ "env": {
+  "OES_JUDGE_MODEL": null
+ },
+ "status": "passed",
+ "n_rows": 2,
+ "result": {
+  "models.judge": null,
+  "models.user": "fake-user-1"
+ }
+}

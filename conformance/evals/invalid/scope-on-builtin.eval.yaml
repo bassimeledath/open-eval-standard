@@ -1,0 +1,5 @@
+oes: 1
+name: scope-on-builtin
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, scope: run, pass: {min: 1}}]
+cases: [{id: a, input: {data: {}}}]

@@ -1,0 +1,45 @@
+oes: 1
+name: z05-counter
+description: Multi-turn agent with no conversation. State carries a running total; a script item's data merges over input.data.
+target: {command: "python3 agents/fake.py counter"}
+scorers:
+  - {name: totals, check: equals, pass: {each: 1}}
+  - {name: turn-count, check: {command: "python3 evals/checks/turn_count.py"}, pass: {each: 1}}
+cases:
+  - id: three-turns
+    input: {data: {add: 1}, state: {total: 0}, script: [{data: {add: 2}}, {data: {add: 3}}]}
+    expected:
+      totals: {state.total: 6, turns.0.data.total: 1, turns.1.data.total: 3, turns.2.data.saw_data: {add: 3}}
+      turn-count: 3
+  - id: stops-early
+    input: {data: {add: 1}, state: {total: 0}, script: [{data: {add: 2}}, {data: {add: 3}}], stop_when: {state.total: 3}}
+    expected: {totals: {state.total: 3}, turn-count: 2}
+  - id: message-item-keeps-data
+    input: {data: {add: 1}, state: {total: 0}, script: ["hello"]}
+    expected: {totals: {state.total: 2, turns.1.data.n_messages: 1, turns.1.data.saw_data: {add: 1}}, turn-count: 2}
+  - id: script-only
+    input: {state: {total: 10}, script: [{data: {add: 5}}]}
+    expected: {totals: {state.total: 15, turns.0.data.saw_data: {add: 5}}, turn-count: 1}
+  - id: stop-when-list
+    input: {data: {add: 1}, script: [{data: {add: 1}}, {data: {add: 1}}, {data: {add: 1}}], stop_when: [{state.total: 99}, {state.total: 2}]}
+    expected: {totals: {state.total: 2}, turn-count: 2}
+  - id: data-merge
+    input:
+      data: {add: 1, tag: x, opts: {a: 1, b: 2}}
+      script:
+        - {data: {add: 5, opts: {a: 9}}}
+        - {message: hi, data: {extra: true}}
+        - plain message
+    expected:
+      totals:
+        turns.1.data.saw_data: {add: 5, tag: x, opts: {a: 9}}
+        turns.2.data.saw_data: {add: 1, tag: x, opts: {a: 1, b: 2}, extra: true}
+        turns.3.data.saw_data: {add: 1, tag: x, opts: {a: 1, b: 2}}
+        state.total: 8
+      turn-count: 4
+  - id: stop-on-turn-1
+    input: {data: {add: 1}, script: [{data: {add: 1}}], stop_when: {state.total: 1}}
+    expected: {totals: {state.total: 1}, turn-count: 1}
+  - id: max-turns-cuts-script
+    input: {data: {add: 1}, script: [{data: {add: 1}}, {data: {add: 1}}, {data: {add: 1}}], max_turns: 2}
+    expected: {totals: {state.total: 2}, turn-count: 2}

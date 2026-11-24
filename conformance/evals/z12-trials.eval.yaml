@@ -1,0 +1,10 @@
+oes: 1
+name: z12-trials
+description: The agent is wrong on every third call. 3 trials -> 2 right, 1 wrong.
+target: {command: "python3 agents/fake.py flipper"}
+trial_count: 3
+scorers:
+  - {name: strict, check: equals, pass: {each: 1}}
+  - {name: lenient, check: equals, pass: {mean: 0.6}}
+cases:
+  - {id: c, input: {data: {}}, expected: {strict: {data.answer: right}, lenient: {data.answer: right}}}

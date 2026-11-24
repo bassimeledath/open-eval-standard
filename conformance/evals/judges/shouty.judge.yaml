@@ -1,0 +1,4 @@
+name: shouty
+prompt: |
+  Is there a reply? Pass if so. (The fake judge answers in capitals; choices match ignoring case.)
+  <<judge: else => PASS>>

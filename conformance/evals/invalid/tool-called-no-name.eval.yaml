@@ -1,0 +1,5 @@
+oes: 1
+name: tool-called-no-name
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: tool_called, pass: {mean: 1}}]
+cases: [{id: a, input: {message: hi}, expected: {s: [{args: {amount: 20}}]}}]

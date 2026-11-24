@@ -1,0 +1,71 @@
+{
+ "about": "A deterministic simulated user; the user speaks first; stop_when list; judges see the conversation.",
+ "eval": "evals/z16-persona.eval.yaml",
+ "status": "passed",
+ "n_rows": 2,
+ "scores": {
+  "solved": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "no-handoff": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "graded": {
+   "value": 0.5,
+   "passed": null,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": [
+    "wifi-after-update"
+   ]
+  }
+ },
+ "result": {
+  "cost_usd.user": 0.006,
+  "cost_usd.judges": 0.002,
+  "models.user": "fake-user-1",
+  "models.judge": "fake-judge-1"
+ },
+ "rows": [
+  {
+   "case_id": "wifi-after-update",
+   "trial": 1,
+   "facts": {
+    "output.turns": {
+     "$len": 3
+    },
+    "output.transcript": {
+     "$len": 6
+    },
+    "output.transcript.0.role": "user",
+    "output.state.solved": true,
+    "cost_usd.user": 0.006,
+    "cost_usd.judges": 0.002
+   }
+  },
+  {
+   "case_id": "wifi-after-update",
+   "trial": 2,
+   "facts": {
+    "output.turns": {
+     "$len": 3
+    },
+    "output.transcript": {
+     "$len": 6
+    },
+    "output.transcript.0.role": "user",
+    "output.state.solved": true,
+    "cost_usd.user": 0.006,
+    "cost_usd.judges": 0.002
+   }
+  }
+ ]
+}

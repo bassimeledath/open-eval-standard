@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bassimeledath/open-eval-standard/schema/v1/judge.schema.json",
+  "title": "OES judge file",
+  "type": "object",
+  "required": [
+    "name",
+    "prompt"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "prompt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "choices": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

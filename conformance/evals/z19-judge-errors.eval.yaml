@@ -1,0 +1,11 @@
+oes: 1
+name: z19-judge-errors
+description: A judge answer that is not JSON, names no listed choice, or a failing LLM command is a judge error.
+target: {command: "python3 agents/fake.py misbehave"}
+scorers:
+  - {name: answered, judge: broken, pass: {each: 1}}
+cases:
+  - {id: fine, input: {data: {mode: mode-fine}}}
+  - {id: not-json, input: {data: {mode: mode-notjson}}}
+  - {id: bad-choice, input: {data: {mode: mode-badchoice}}}
+  - {id: llm-exits, input: {data: {mode: mode-exit}}}

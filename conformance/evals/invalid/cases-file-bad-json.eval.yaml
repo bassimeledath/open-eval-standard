@@ -1,0 +1,6 @@
+oes: 1
+name: cases-file-bad-json
+description: A line of the cases file is not JSON.
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: {file: not-json.jsonl}

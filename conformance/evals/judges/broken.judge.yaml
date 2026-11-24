@@ -1,0 +1,4 @@
+name: broken
+prompt: |
+  Pass if the agent answered.
+  <<judge: if mode-notjson => !notjson>> <<judge: if mode-badchoice => !badchoice>> <<judge: if mode-exit => !fail>> <<judge: else => pass>>

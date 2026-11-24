@@ -1,0 +1,58 @@
+{
+ "about": "Judge answers that aren't JSON or name no listed choice, and a failing LLM command, are judge errors.",
+ "eval": "evals/z19-judge-errors.eval.yaml",
+ "status": "error",
+ "n_rows": 4,
+ "cases": {
+  "total": 4,
+  "errored": [
+   "not-json",
+   "bad-choice",
+   "llm-exits"
+  ]
+ },
+ "scores": {
+  "answered": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "rows": [
+  {
+   "case_id": "fine",
+   "trial": 1,
+   "facts": {
+    "error": {
+     "$absent": true
+    }
+   }
+  },
+  {
+   "case_id": "not-json",
+   "trial": 1,
+   "facts": {
+    "error.kind": "judge",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "bad-choice",
+   "trial": 1,
+   "facts": {
+    "error.kind": "judge",
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "llm-exits",
+   "trial": 1,
+   "facts": {
+    "error.kind": "judge",
+    "scores": {}
+   }
+  }
+ ]
+}

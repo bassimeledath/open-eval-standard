@@ -1,0 +1,9 @@
+{
+ "about": "validate calls nothing, so it passes without OES_LLM_COMMAND.",
+ "eval": "evals/z15-judges.eval.yaml",
+ "verb": "validate",
+ "env": {
+  "OES_LLM_COMMAND": null
+ },
+ "exit": 0
+}

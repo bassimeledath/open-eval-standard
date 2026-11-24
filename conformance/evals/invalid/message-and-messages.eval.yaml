@@ -1,0 +1,5 @@
+oes: 1
+name: message-and-messages
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {message: hi, messages: [{role: user, content: hi}]}, expected: {s: {data.q: 1}}}]

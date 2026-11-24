@@ -1,0 +1,24 @@
+oes: 1
+name: z16-persona
+description: A simulated user whose laptop lost wifi after an update; a scripted helpdesk bot solves it in three turns.
+target: {http: "http://127.0.0.1:8811/support"}
+trial_count: 2
+scorers:
+  - {name: solved, judge: goal-completion, pass: {mean: 0.5}}
+  - {name: no-handoff, check: equals, pass: {mean: 0.5}}
+  - {name: graded, judge: three-way}
+cases:
+  - id: wifi-after-update
+    input:
+      persona: >
+        You are a calm adult whose laptop stopped joining home wifi after a system update.
+        Mention the update only if asked what changed. If you are told to forget and rejoin the
+        network, do it and report that it works now. Stop when it works or you are handed off.
+        <<user: if Forget the wifi network => I forgot it and rejoined, and it works now.>>
+        <<user: if What changed recently => I installed a system update yesterday.>>
+        <<user: else => My laptop will not join my home wifi.>>
+      max_turns: 8
+      stop_when: [{state.solved: true}, {state.handed_off: true}]
+    expected:
+      solved: [Asks what changed before suggesting a fix., Never asks for the wifi password.]
+      no-handoff: {state.solved: true}

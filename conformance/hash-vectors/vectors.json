@@ -1,0 +1,53 @@
+{
+  "hash-v1-minimal": {
+    "eval": "v1/hash-v1-minimal.eval.yaml",
+    "uses": [
+      "hash-v1-minimal.eval.yaml"
+    ],
+    "eval_hash": "sha256:431f2bced4e023ee2976d061ea33913954a476fa19820073e9227c709833b5c8"
+  },
+  "hash-v2-graders": {
+    "eval": "v2/hash-v2-graders.eval.yaml",
+    "uses": [
+      "hash-v2-graders.eval.yaml",
+      "cases.jsonl",
+      "judges/used.judge.yaml"
+    ],
+    "eval_hash": "sha256:d0cca17d01736aca4759e1b603fdaa9cf9859c9a5ed1372a4f7ec49624476872"
+  },
+  "hash-v3-inputs": {
+    "eval": "v3/hash-v3-inputs.eval.yaml",
+    "uses": [
+      "hash-v3-inputs.eval.yaml",
+      "fixtures/doc.txt",
+      "fixtures/folder",
+      "fixtures/folder-b.txt",
+      "fixtures/under_score.txt",
+      "fixtures/Zeta.txt"
+    ],
+    "eval_hash": "sha256:238974c396c680a7421a17c393ad69466dde03192de9f0de7d5ab863ea3a35f9"
+  },
+  "hash-v4-nested-checks": {
+    "eval": "v4/hash-v4-nested-checks.eval.yaml",
+    "uses": [
+      "hash-v4-nested-checks.eval.yaml"
+    ],
+    "eval_hash": "sha256:dc6de3c19df53038cc5144812556016d811b087b698695c8a7af788d111c1616"
+  },
+  "hash-v5-state-file": {
+    "eval": "v5/hash-v5-state-file.eval.yaml",
+    "uses": [
+      "hash-v5-state-file.eval.yaml",
+      "fixtures/used.txt"
+    ],
+    "eval_hash": "sha256:20c3bb63defbbe65217a2d49ae42965d80bba7ef7984319d2df2f309180f05d2"
+  },
+  "hash-v6-dotdot": {
+    "eval": "v6/sub/hash-v6-dotdot.eval.yaml",
+    "uses": [
+      "hash-v6-dotdot.eval.yaml",
+      "../shared/doc.txt"
+    ],
+    "eval_hash": "sha256:21fd69568285559722876a2ccdbf890ccc676d5e0137b43fadaf56fbc30ece29"
+  }
+}

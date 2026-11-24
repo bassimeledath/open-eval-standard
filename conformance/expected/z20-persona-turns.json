@@ -1,0 +1,68 @@
+{
+ "about": "Simulated-user turn rules: who speaks first, max_turns, stop_when on turn 1, [done] trimmed, no data/state for the user, a failing user reruns the trial.",
+ "eval": "evals/z20-persona-turns.eval.yaml",
+ "status": "passed",
+ "n_rows": 7,
+ "scores": {
+  "shape": {
+   "value": 1,
+   "passed": true,
+   "scored": 7,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "turns": {
+   "value": 1,
+   "passed": true,
+   "scored": 7,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "result": {
+  "cost_usd.user": 0.002857142857142857,
+  "models.user": "fake-user-1",
+  "models.judge": null
+ },
+ "rows": [
+  {
+   "case_id": "flaky-user",
+   "trial": 1,
+   "facts": {
+    "attempts": 2,
+    "error": {
+     "$absent": true
+    }
+   }
+  },
+  {
+   "case_id": "stop-on-turn-1",
+   "trial": 1,
+   "facts": {
+    "output.turns": {
+     "$len": 1
+    },
+    "cost_usd.user": null
+   }
+  },
+  {
+   "case_id": "user-speaks-first",
+   "trial": 1,
+   "facts": {
+    "output.transcript.0.role": "user",
+    "cost_usd.user": 0.004
+   }
+  },
+  {
+   "case_id": "max-turns",
+   "trial": 1,
+   "facts": {
+    "cost_usd.user": 0.002
+   }
+  }
+ ],
+ "counters": {
+  "llm-count-max-turns": 1,
+  "llm-count-stop-on-turn-1": 0
+ }
+}

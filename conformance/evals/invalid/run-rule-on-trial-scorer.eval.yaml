@@ -1,0 +1,5 @@
+oes: 1
+name: run-rule-on-trial-scorer
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {min: 1}}]
+cases: [{id: a, input: {data: {}}, expected: {s: {data.q: 1}}}]

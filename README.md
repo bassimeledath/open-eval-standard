@@ -31,6 +31,14 @@ cases:
       knows-capital: [Paris]     # under the scorer's name: the reply must mention Paris
 ```
 
+## Run it
+
+```bash
+uvx --from "git+https://github.com/bassimeledath/open-eval-standard#subdirectory=runners/python" oes run evals/capitals.eval.yaml
+```
+
+It exits 0 when the eval passes and 1 when it doesn't, so it drops straight into CI. Results go to `.oes/runs/`. There's also a [TypeScript runner](runners/typescript/). Both pass the same [conformance suite](conformance/). Evals with an LLM judge or a simulated user need `OES_LLM_COMMAND`, a small script that calls whichever model you use ([example](runners/python/README.md#the-llm-command)).
+
 ## Use it with a coding agent
 
 Install the skill, then ask your coding agent to "add OES evals to this project".

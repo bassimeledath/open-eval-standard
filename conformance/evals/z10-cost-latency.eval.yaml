@@ -1,0 +1,12 @@
+oes: 1
+name: z10-cost-latency
+description: The agent sleeps 300 ms and reports $0.01 per turn. Trial cost sums its turns.
+target: {command: "python3 agents/fake.py sleepy"}
+trial_count: 2
+scorers:
+  - {name: cost, check: cost_per_trial_usd, pass: {max: 0.02}}
+  - {name: snappy, check: latency_p95_ms, pass: {max: 250}}
+  - {name: replied, check: reply_contains, pass: {each: 1}}
+cases:
+  - {id: two-turns, input: {message: hi, script: [again]}, expected: {replied: [ok]}}
+  - {id: one-turn, input: {message: hi}, expected: {replied: [ok]}}

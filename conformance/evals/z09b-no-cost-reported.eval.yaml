@@ -1,0 +1,8 @@
+oes: 1
+name: z09b-no-cost-reported
+description: A cost gate on an agent that reports no cost is not_evaluated, never passed.
+target: {command: "python3 agents/fake.py numbers"}
+scorers:
+  - {name: cheap, check: cost_per_trial_usd, pass: {max: 1.0}}
+cases:
+  - {id: a, input: {data: {total_shown: 1}}}

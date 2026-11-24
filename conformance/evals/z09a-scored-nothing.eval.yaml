@@ -1,0 +1,9 @@
+oes: 1
+name: z09a-scored-nothing
+description: A gating scorer that skips every trial scores nothing, so the run is not_evaluated.
+target: {command: "python3 agents/fake.py numbers"}
+scorers:
+  - {name: never-scores, check: {command: "python3 evals/checks/always_skip.py"}, pass: {mean: 0.5}}
+  - {name: fine, check: equals, pass: {each: 1}}
+cases:
+  - {id: a, input: {data: {total_shown: 1}}, expected: {fine: {data.total: 1}}}

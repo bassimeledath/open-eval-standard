@@ -1,0 +1,35 @@
+oes: 1
+name: z11-files
+description: Section 4.2. Every trial attempt gets its own copies, in the run folder, by absolute path; one source is copied once per trial; files in state are left alone.
+target: {command: "python3 agents/fake.py files"}
+trial_count: 3
+scorers:
+  - {name: isolated, check: equals, pass: {each: 1}}
+  - {name: workdir-still-there, check: {command: "python3 evals/checks/workdir_has_log.py"}, pass: {each: 1}}
+cases:
+  - id: file-and-folder
+    input:
+      data:
+        doc: {type: file, path: fixtures/note.txt, mime: text/plain}
+        dir: {type: file, path: fixtures/workdir}
+    expected:
+      isolated: {data.lines: 1, data.all_abs: true, data.all_exist: true, data.doc_text: hello}
+      workdir-still-there: true
+  - id: file-in-message
+    input:
+      message: [{type: text, text: "read this"}, {type: file, path: fixtures/note.txt, mime: text/plain}]
+    expected: {isolated: {data.n_files: 1, data.all_abs: true, data.all_exist: true}}
+  - id: same-source-twice
+    input: {data: {a: {type: file, path: fixtures/note.txt}, b: {type: file, path: fixtures/note.txt}}}
+    expected: {isolated: {data.n_files: 2, data.n_distinct: 1, data.all_exist: true}}
+  - id: file-in-script
+    input:
+      data: {doc: {type: file, path: fixtures/note.txt}}
+      script: [{data: {extra: {type: file, path: fixtures/note.txt}}}]
+    expected: {isolated: {turns.0.data.n_files: 1, turns.1.data.n_files: 2, turns.1.data.n_distinct: 1, data.all_abs: true}}
+  - id: file-in-state
+    input: {data: {}, state: {doc: {type: file, path: fixtures/note.txt}}}
+    expected: {isolated: {data.n_files: 0, data.state_doc: {type: file, path: fixtures/note.txt}}}
+  - id: fresh-copy-on-retry
+    input: {data: {dir: {type: file, path: fixtures/workdir}, crash_once: true}}
+    expected: {isolated: {data.lines: 1}}

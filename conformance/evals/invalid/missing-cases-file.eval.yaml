@@ -1,0 +1,5 @@
+oes: 1
+name: missing-cases-file
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: {file: no-such-cases.jsonl}

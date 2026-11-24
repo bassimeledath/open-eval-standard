@@ -1,0 +1,83 @@
+{
+ "about": "OES_RETRIES=0: every flaky part errors on its first failure.",
+ "eval": "evals/z17-retries.eval.yaml",
+ "env": {
+  "OES_RETRIES": "0"
+ },
+ "status": "error",
+ "n_rows": 4,
+ "cases": {
+  "total": 4,
+  "errored": [
+   "flaky-target",
+   "flaky-check",
+   "flaky-judge"
+  ]
+ },
+ "scores": {
+  "ok": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "flaky-check": {
+   "value": null,
+   "passed": null,
+   "scored": 0,
+   "skipped": 1,
+   "failing_cases": []
+  },
+  "flaky-judge": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "flaky-run": {
+   "passed": null
+  }
+ },
+ "rows": [
+  {
+   "case_id": "steady",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error": {
+     "$absent": true
+    }
+   }
+  },
+  {
+   "case_id": "flaky-target",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error.kind": "target"
+   }
+  },
+  {
+   "case_id": "flaky-check",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error.kind": "check",
+    "output.data.call": 1,
+    "scores": {}
+   }
+  },
+  {
+   "case_id": "flaky-judge",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error.kind": "judge",
+    "output.data.call": 1,
+    "scores": {}
+   }
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+name: bad-choice-judge
+prompt: Is it good?
+choices: {pass: 2, fail: 0}

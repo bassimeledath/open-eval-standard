@@ -1,0 +1,24 @@
+{
+ "about": "A reported cost of 0 is known and free.",
+ "eval": "evals/z09c-zero-cost.eval.yaml",
+ "status": "passed",
+ "n_rows": 1,
+ "scores": {
+  "cheap": {
+   "value": 0,
+   "passed": true
+  }
+ },
+ "result": {
+  "cost_usd.agent": 0
+ },
+ "rows": [
+  {
+   "case_id": "free",
+   "trial": 1,
+   "facts": {
+    "cost_usd.agent": 0
+   }
+  }
+ ]
+}

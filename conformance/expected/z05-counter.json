@@ -1,0 +1,56 @@
+{
+ "about": "Scripts: state carried, script data merged over input.data (shallow), stop_when incl. turn 1 and lists, max_turns cuts a script.",
+ "eval": "evals/z05-counter.eval.yaml",
+ "status": "passed",
+ "n_rows": 8,
+ "cases": {
+  "total": 8,
+  "errored": []
+ },
+ "scores": {
+  "totals": {
+   "value": 1,
+   "passed": true,
+   "scored": 8,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "turn-count": {
+   "value": 1,
+   "passed": true,
+   "scored": 8,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "rows": [
+  {
+   "case_id": "data-merge",
+   "trial": 1,
+   "facts": {
+    "output.turns": {
+     "$len": 4
+    },
+    "latency_ms": {
+     "$len": 4
+    }
+   }
+  },
+  {
+   "case_id": "stop-on-turn-1",
+   "trial": 1,
+   "facts": {
+    "output.turns": {
+     "$len": 1
+    }
+   }
+  },
+  {
+   "case_id": "three-turns",
+   "trial": 1,
+   "facts": {
+    "output.state.total": 6
+   }
+  }
+ ]
+}

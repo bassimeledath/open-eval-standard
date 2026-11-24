@@ -8,7 +8,7 @@ The first release candidate of OES version 1.
 - JSON Schemas for eval files, judge files and results (`skills/oes/*.schema.json`).
 - The `oes` agent skill, with five examples: a coding agent, invoice extraction, a ticket classifier, a refund agent and a support chat.
 - Reference runners in Python and TypeScript.
-- A conformance suite that every runner must pass.
+- A conformance suite that every runner must pass: 82 checks, passed by both reference runners.
 
 Drafts 1 to 5 led up to this release. The main changes, from the reviews and stress tests:
 

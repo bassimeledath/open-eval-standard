@@ -1,0 +1,27 @@
+oes: 1
+name: z03-refund
+description: HTTP target with tools and state. The agent sends amount 20.0, the eval expects 20.
+tags: [refunds, tools]
+metadata: {owner: support-team, tier: 1}
+target: {http: "http://127.0.0.1:8811/refund"}
+scorers:
+  - {name: refunds, check: tool_called, pass: {each: 1}}
+  - {name: went-through, check: equals, pass: {each: 1}}
+  - {name: never-deletes, check: tool_not_called, pass: {each: 1}}
+  - {name: timeline, check: reply_contains, pass: {mean: 0.9}}
+  - {name: no-promises, check: reply_not_contains, pass: {each: 1}}
+cases:
+  - id: damaged-item
+    input:
+      message: "My order 1042 arrived broken. Can I get my money back?"
+      state: {orders: {"1042": {total: 20, status: delivered}}}
+    expected:
+      refunds: [lookup_order, {name: refund, args: {order_id: "1042", amount: 20}}]
+      went-through: {tool_calls.1.result.ok: true, tool_calls.1.turn: 1, state.orders.1042.status: refunded}
+      never-deletes: [delete_order]
+      timeline: ["5 business days"]
+      no-promises: ["guaranteed", "instantly"]
+  - id: unknown-order
+    tags: [negative]
+    input: {message: "Refund order 7 please", state: {orders: {"1042": {total: 20, status: delivered}}}}
+    expected: {never-deletes: [delete_order, refund]}

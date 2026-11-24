@@ -1,0 +1,68 @@
+{
+ "about": "Custom trial check with params and value, a check that skips (coverage), a run check reading rows, a scorer with no pass rule.",
+ "eval": "evals/z08-custom.eval.yaml",
+ "status": "failed",
+ "n_rows": 3,
+ "cases": {
+  "total": 3,
+  "errored": []
+ },
+ "scores": {
+  "close": {
+   "value": 0.6667,
+   "passed": false,
+   "scored": 3,
+   "skipped": 0,
+   "failing_cases": [
+    "way-off"
+   ]
+  },
+  "only-when-expected": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 2,
+   "failing_cases": []
+  },
+  "accuracy": {
+   "value": 0.6667,
+   "passed": true
+  },
+  "report-only": {
+   "value": 0.5,
+   "passed": null,
+   "scored": 2,
+   "skipped": 1,
+   "failing_cases": [
+    "tiny-diff"
+   ]
+  }
+ },
+ "rows": [
+  {
+   "case_id": "exact",
+   "trial": 1,
+   "facts": {
+    "scores.close.score": 1,
+    "scores.close.value": 0,
+    "scores.only-when-expected.score": 1
+   }
+  },
+  {
+   "case_id": "tiny-diff",
+   "trial": 1,
+   "facts": {
+    "scores.only-when-expected.score": null,
+    "scores.report-only.score": 0
+   }
+  },
+  {
+   "case_id": "way-off",
+   "trial": 1,
+   "facts": {
+    "scores.close.score": 0,
+    "scores.close.value": 5
+   }
+  }
+ ]
+}

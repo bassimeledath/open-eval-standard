@@ -1,0 +1,11 @@
+oes: 1
+name: z01-triage
+description: Single-turn data agent; one of three tickets is routed wrong.
+target: {command: "python3 agents/fake.py triage"}
+scorers:
+  - {name: right-queue, check: equals, pass: {mean: 0.6}}
+  - {name: fast, check: latency_p95_ms, pass: {max: 10000}}
+cases:
+  - {id: charged-twice, input: {data: {subject: Charged twice, body: I was billed two times.}}, expected: {right-queue: {data.queue: billing}}}
+  - {id: reset-email, input: {data: {subject: "Can't log in", body: The reset email never arrives.}}, expected: {right-queue: {data.queue: account}}}
+  - {id: shipping-late, input: {data: {subject: Where is my box, body: It is two weeks late.}}, expected: {right-queue: {data.queue: shipping}}}

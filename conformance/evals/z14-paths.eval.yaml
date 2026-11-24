@@ -1,0 +1,47 @@
+oes: 1
+name: z14-paths
+description: Output paths and JSON equality (section 6).
+target: {command: "python3 agents/fake.py paths"}
+scorers:
+  - {name: list-index, check: equals}
+  - {name: numeric-key, check: equals}
+  - {name: present-null, check: equals}
+  - {name: missing-is-not-null, check: equals}
+  - {name: out-of-range, check: equals}
+  - {name: dotted-key, check: equals}
+  - {name: int-vs-float, check: equals}
+  - {name: whole-list, check: equals}
+  - {name: list-order, check: equals}
+  - {name: key-order, check: equals}
+  - {name: bool-not-number, check: equals}
+  - {name: text-not-number, check: equals}
+  - {name: case-sensitive, check: equals}
+  - {name: reply-missing, check: equals}
+  - {name: tool-turn, check: equals}
+  - {name: tool-args, check: tool_called}
+  - {name: tool-args-typed, check: tool_called}
+  - {name: no-reply-contains, check: reply_contains}
+  - {name: reply-absent, check: reply_not_contains, pass: {each: 1}}
+cases:
+  - id: p
+    input: {data: {}}
+    expected:
+      list-index: {data.list.1: 20}
+      numeric-key: {data.obj.0: zero}
+      present-null: {data.nul: null}
+      missing-is-not-null: {data.missing: null}
+      out-of-range: {data.list.2: null}
+      dotted-key: {data.a.b: 1}
+      int-vs-float: {data.num: 20}
+      whole-list: {data.list: [10, 20]}
+      list-order: {data.list: [20, 10]}
+      key-order: {data.pair: {b: 2, a: 1}}
+      bool-not-number: {data.flag: 1}
+      text-not-number: {data.five: 5}
+      case-sensitive: {data.word: hello}
+      reply-missing: {reply: null}
+      tool-turn: {tool_calls.0.turn: 1, tool_calls.0.name: lookup}
+      tool-args: [{name: lookup, args: {id: 7}}]
+      tool-args-typed: [{name: lookup, args: {id: "7"}}]
+      no-reply-contains: [anything]
+      reply-absent: [anything]

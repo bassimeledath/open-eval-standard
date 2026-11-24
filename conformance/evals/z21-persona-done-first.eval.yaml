@@ -1,0 +1,13 @@
+oes: 1
+name: z21-persona-done-first
+description: A simulated user that says [done] before the first turn means that test case did not run, so the run is not_evaluated.
+target: {http: "http://127.0.0.1:8811/chat"}
+scorers:
+  - {name: replied, check: reply_contains, pass: {each: 1}}
+cases:
+  - id: runs
+    input: {message: hi, persona: "<<user: else => [done]>>", max_turns: 3}
+    expected: {replied: [turn 1]}
+  - id: never-starts
+    input: {persona: "<<user: else => !padded-done>>", max_turns: 3}
+    expected: {replied: [turn 1]}

@@ -1,0 +1,5 @@
+oes: 1
+name: judge-extra-field
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: j, judge: bad-judge, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {}}}]

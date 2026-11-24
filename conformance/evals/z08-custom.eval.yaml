@@ -1,0 +1,16 @@
+oes: 1
+name: z08-custom
+description: Custom trial and run checks, params, value, a skipping check and a scorer with no pass rule.
+target: {command: "python3 agents/fake.py numbers"}
+scorers:
+  - name: close
+    check: {command: "python3 evals/checks/close_enough.py"}
+    params: {path: data.total, tolerance: 0.01}
+    pass: {each: 1}
+  - {name: only-when-expected, check: {command: "python3 evals/checks/skip_without_expected.py"}, pass: {mean: 0.5}}
+  - {name: accuracy, check: {command: "python3 evals/checks/run_accuracy.py"}, scope: run, params: {scorer: close}, pass: {min: 0.6}}
+  - {name: report-only, check: equals}
+cases:
+  - {id: exact, input: {data: {total_shown: 1249.5}}, expected: {close: 1249.50, only-when-expected: yes-please, report-only: {data.total: 1249.5}}}
+  - {id: tiny-diff, input: {data: {total_shown: 1249.505}}, expected: {close: 1249.50, report-only: {data.total: 1249.5}}}
+  - {id: way-off, input: {data: {total_shown: 1254.5}}, expected: {close: 1249.50}}

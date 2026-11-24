@@ -1,0 +1,8 @@
+{
+ "about": "Section 8.4: with no OES_LLM_COMMAND the runner can't run the judges, so run exits 2 without running.",
+ "eval": "evals/z15-judges.eval.yaml",
+ "env": {
+  "OES_LLM_COMMAND": null
+ },
+ "exit": 2
+}

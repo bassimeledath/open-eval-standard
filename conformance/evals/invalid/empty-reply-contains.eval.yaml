@@ -1,0 +1,6 @@
+oes: 1
+name: empty-reply-contains
+description: An empty list is a wrong shape for a built-in entry (SPEC 6).
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: reply_contains, pass: {mean: 1}}]
+cases: [{id: a, input: {message: hi}, expected: {s: []}}]

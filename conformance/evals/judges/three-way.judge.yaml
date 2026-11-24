@@ -1,0 +1,5 @@
+name: three-way
+prompt: |
+  How efficient was the assistant? "great" if it solved it in three replies or fewer, "ok" if it took longer, "bad" if it never solved it.
+  <<judge: else => ok>>
+choices: {great: 1, ok: 0.5, bad: 0}

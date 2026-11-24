@@ -1,0 +1,13 @@
+oes: 1
+name: z18-coverage
+description: Section 6. A gating scorer with an entry in one case of five passes, and scored/skipped show the gap.
+target: {command: "python3 agents/fake.py triage"}
+scorers:
+  - {name: right-queue, check: equals, pass: {each: 1}}
+  - {name: no-tools, check: tool_not_called, pass: {each: 1}}
+cases:
+  - {id: t1, input: {data: {subject: Charged twice}}, expected: {right-queue: {data.queue: billing}, no-tools: [refund]}}
+  - {id: t2, input: {data: {subject: Password reset}}, expected: {no-tools: [refund]}}
+  - {id: t3, input: {data: {subject: Late box}}, expected: {right-queue: null, no-tools: [refund]}}
+  - {id: t4, input: {data: {subject: Hello}}, expected: {no-tools: [refund]}}
+  - {id: t5, input: {data: {subject: Thanks}}, expected: {no-tools: [refund]}}

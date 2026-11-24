@@ -1,0 +1,10 @@
+oes: 1
+name: z22-output-untouched
+description: SPEC 8. The output is kept exactly as the agent returned it; a relative file path in it is not rewritten.
+target: {command: "python3 agents/fake.py relfile"}
+scorers:
+  - {name: same-output, check: equals, pass: {each: 1}}
+cases:
+  - id: relative-path
+    input: {message: write the report}
+    expected: {same-output: {data.out: {type: file, path: out/report.txt}, data.dir: ./out}}

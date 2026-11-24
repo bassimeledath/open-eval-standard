@@ -1,0 +1,19 @@
+{
+ "about": "JSONL cases file with a blank line; file paths in it are relative to the eval file.",
+ "eval": "evals/z13-cases-file.eval.yaml",
+ "status": "passed",
+ "n_rows": 2,
+ "cases": {
+  "total": 2,
+  "errored": []
+ },
+ "scores": {
+  "s": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ }
+}

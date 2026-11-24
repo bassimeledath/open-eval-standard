@@ -1,0 +1,5 @@
+oes: 1
+name: missing-input-file
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {doc: {type: file, path: no-such-file.txt}}}, expected: {s: {data.q: 1}}}]

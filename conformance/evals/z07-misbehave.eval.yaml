@@ -1,0 +1,23 @@
+oes: 1
+name: z07-misbehave
+description: Section 4.1 and 8.1. Logs on stdout are fine; bad exits, bad JSON, bad fields and timeouts are errors; a flaky target passes on retry; a field set to null counts as absent; an invalid response isn't logged as a turn.
+target: {command: "python3 agents/fake.py misbehave", timeout_s: 1}
+scorers:
+  - {name: ok, check: equals, pass: {each: 1}}
+  - {name: kept-extra, check: equals, pass: {each: 1}}
+cases:
+  - {id: ok, input: {data: {mode: ok}}, expected: {ok: {data.ok: true}}}
+  - {id: stderr-noise, input: {data: {mode: stderr_noise}}, expected: {ok: {data.ok: true}}}
+  - {id: stdout-noise, input: {data: {mode: stdout_noise}}, expected: {ok: {data.ok: true}}}
+  - {id: exit1, input: {data: {mode: exit1}}, expected: {ok: {data.ok: true}}}
+  - {id: bad-json, input: {data: {mode: bad_json}}, expected: {ok: {data.ok: true}}}
+  - {id: non-object, input: {data: {mode: non_object}}, expected: {ok: {data.ok: true}}}
+  - {id: bad-reply, input: {data: {mode: bad_reply}}, expected: {ok: {data.ok: true}}}
+  - {id: bad-state, input: {data: {mode: bad_state}}, expected: {ok: {data.ok: true}}}
+  - {id: bad-tool-calls, input: {data: {mode: bad_tool_calls}}, expected: {ok: {data.ok: true}}}
+  - {id: bad-cost, input: {data: {mode: bad_cost}}, expected: {ok: {data.ok: true}}}
+  - {id: bad-second-turn, input: {data: {mode: ok}, script: [{data: {mode: bad_reply}}]}, expected: {ok: {data.ok: true}}}
+  - {id: slow, input: {data: {mode: slow}}, expected: {ok: {data.ok: true}}}
+  - {id: flaky, input: {data: {mode: flaky}}, expected: {ok: {data.ok: true}}}
+  - {id: null-fields, input: {data: {mode: null_fields}}, expected: {ok: {data.ok: true}}}
+  - {id: extra-field, input: {data: {mode: extra_field}}, expected: {ok: {data.ok: true}, kept-extra: {turns.0.trace_id: abc}}}

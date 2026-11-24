@@ -1,0 +1,5 @@
+name: own-model
+prompt: |
+  Pass if the reply is on topic.
+  <<judge: if [model=fake-judge-special] => pass>> <<judge: else => fail>>
+model: fake-judge-special

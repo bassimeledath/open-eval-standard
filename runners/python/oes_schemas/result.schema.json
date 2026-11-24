@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bassimeledath/open-eval-standard/schema/v1/result.schema.json",
+  "title": "OES result.json",
+  "description": "The result of one run (SPEC 8). Rows of rows.jsonl follow $defs/row.",
+  "type": "object",
+  "required": ["eval", "run_id", "started_at", "runner", "tags", "metadata", "agent_version", "models", "eval_hash", "status", "scores", "latency_ms", "cost_usd", "cases"],
+  "properties": {
+    "eval": {"$ref": "#/$defs/name"},
+    "run_id": {"type": "string", "minLength": 1},
+    "started_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|\\+00:00)$"},
+    "runner": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {"name": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}}
+    },
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "metadata": {"type": "object"},
+    "agent_version": {"type": ["string", "null"]},
+    "models": {
+      "type": "object",
+      "required": ["agent", "judge", "user"],
+      "properties": {
+        "agent": {"$ref": "#/$defs/model"},
+        "judge": {"$ref": "#/$defs/model"},
+        "user": {"$ref": "#/$defs/model"}
+      }
+    },
+    "eval_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "status": {"enum": ["passed", "failed", "error", "not_evaluated"]},
+    "scores": {
+      "type": "object",
+      "additionalProperties": {"oneOf": [{"$ref": "#/$defs/trial_score"}, {"$ref": "#/$defs/run_score"}]}
+    },
+    "latency_ms": {
+      "type": "object",
+      "required": ["p50", "p95"],
+      "properties": {"p50": {"$ref": "#/$defs/number_or_null"}, "p95": {"$ref": "#/$defs/number_or_null"}}
+    },
+    "cost_usd": {"$ref": "#/$defs/costs"},
+    "cases": {
+      "type": "object",
+      "required": ["total", "errored"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 1},
+        "errored": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "$defs": {
+    "name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "number_or_null": {"type": ["number", "null"]},
+    "model": {"anyOf": [{"type": ["string", "null"]}, {"type": "array", "minItems": 2, "items": {"type": "string"}}]},
+    "costs": {
+      "type": "object",
+      "required": ["agent", "judges", "user"],
+      "properties": {
+        "agent": {"$ref": "#/$defs/number_or_null"},
+        "judges": {"$ref": "#/$defs/number_or_null"},
+        "user": {"$ref": "#/$defs/number_or_null"}
+      }
+    },
+    "trial_score": {
+      "type": "object",
+      "required": ["value", "passed", "scored", "skipped", "failing_cases"],
+      "properties": {
+        "value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "passed": {"type": ["boolean", "null"]},
+        "scored": {"type": "integer", "minimum": 0},
+        "skipped": {"type": "integer", "minimum": 0},
+        "failing_cases": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "run_score": {
+      "type": "object",
+      "required": ["value", "passed", "reason"],
+      "not": {"required": ["failing_cases"]},
+      "properties": {
+        "value": {"$ref": "#/$defs/number_or_null"},
+        "passed": {"type": ["boolean", "null"]},
+        "reason": {"type": ["string", "null"]}
+      }
+    },
+    "message": {
+      "type": "object",
+      "required": ["role", "content"],
+      "properties": {
+        "role": {"enum": ["user", "assistant"]},
+        "content": {"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "object", "required": ["type"]}}]}
+      }
+    },
+    "row": {
+      "type": "object",
+      "required": ["case_id", "trial", "session_id", "attempts", "tags", "input", "expected", "output", "scores", "latency_ms", "cost_usd"],
+      "properties": {
+        "case_id": {"type": "string", "minLength": 1},
+        "trial": {"type": "integer", "minimum": 1},
+        "session_id": {"type": "string", "minLength": 1},
+        "attempts": {"type": "integer", "minimum": 1},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "input": {"type": "object"},
+        "expected": {"type": "object"},
+        "output": {
+          "type": "object",
+          "required": ["transcript", "tool_calls", "turns"],
+          "properties": {
+            "transcript": {"type": "array", "items": {"$ref": "#/$defs/message"}},
+            "tool_calls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "turn"],
+                "properties": {"name": {"type": "string"}, "turn": {"type": "integer", "minimum": 1}}
+              }
+            },
+            "turns": {"type": "array", "items": {"type": "object"}},
+            "reply": {"type": "string"},
+            "state": {"type": "object"}
+          }
+        },
+        "scores": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["score"],
+            "properties": {
+              "score": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+              "reason": {"type": ["string", "null"]},
+              "choice": {"type": "string"}
+            }
+          }
+        },
+        "latency_ms": {"type": "array", "items": {"type": "number", "minimum": 0}},
+        "cost_usd": {"$ref": "#/$defs/costs"},
+        "error": {
+          "type": "object",
+          "required": ["kind", "message"],
+          "properties": {
+            "kind": {"enum": ["target", "check", "judge", "user", "timeout"]},
+            "message": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}

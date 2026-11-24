@@ -1,0 +1,23 @@
+oes: 1
+name: z06-chat
+description: messages carries the agent's earlier replies; one session_id per trial attempt, the same on every turn.
+target: {http: "http://127.0.0.1:8811/chat"}
+scorers:
+  - {name: transcript, check: equals, pass: {each: 1}}
+  - {name: mentions, check: reply_contains, pass: {each: 1}}
+  - {name: sessions, check: {command: "python3 evals/checks/sessions.py"}, scope: run, pass: {min: 1}}
+cases:
+  - id: scripted-three
+    input: {message: hi, script: [second, third]}
+    expected:
+      transcript: {turns.0.data.n_messages: 1, turns.1.data.roles: [user, assistant, user], turns.2.data.n_messages: 5, data.last_user: third, data.session_id_present: true}
+      mentions: ["TURN 3", "turn 1"]
+  - id: mid-conversation
+    input: {messages: [{role: user, content: a}, {role: assistant, content: b}, {role: user, content: c}]}
+    expected: {transcript: {data.n_messages: 3, reply: "turn 2: got 3 messages"}}
+  - id: data-agent-with-replies
+    input: {data: {x: 1}, script: [{data: {x: 2}}]}
+    expected: {transcript: {turns.0.data.n_messages: 0, turns.1.data.n_messages: 1, turns.1.data.roles: [assistant], turns.1.data.saw_data: {x: 2}}}
+  - id: parts-message
+    input: {message: [{type: text, text: "look at this"}], script: [[{type: text, text: "and this"}]]}
+    expected: {transcript: {turns.1.data.n_messages: 3, data.last_user: and this}}

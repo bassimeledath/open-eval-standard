@@ -1,0 +1,5 @@
+oes: 1
+name: custom-run-check-trial-rule
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: r, check: {command: "python3 evals/checks/run_accuracy.py"}, scope: run, pass: {each: 1}}]
+cases: [{id: a, input: {data: {}}}]

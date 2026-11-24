@@ -1,0 +1,82 @@
+{
+ "about": "Default retries (2): a flaky target reruns the trial; a flaky check, judge and run check rerun alone, and the agent is not called again (data.call stays 1).",
+ "eval": "evals/z17-retries.eval.yaml",
+ "status": "passed",
+ "n_rows": 4,
+ "cases": {
+  "total": 4,
+  "errored": []
+ },
+ "scores": {
+  "ok": {
+   "value": 1,
+   "passed": true,
+   "scored": 4,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "flaky-check": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 3,
+   "failing_cases": []
+  },
+  "flaky-judge": {
+   "value": 1,
+   "passed": true,
+   "scored": 4,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "flaky-run": {
+   "value": 1,
+   "passed": true
+  }
+ },
+ "rows": [
+  {
+   "case_id": "steady",
+   "trial": 1,
+   "facts": {
+    "attempts": 1
+   }
+  },
+  {
+   "case_id": "flaky-target",
+   "trial": 1,
+   "facts": {
+    "attempts": 2,
+    "error": {
+     "$absent": true
+    }
+   }
+  },
+  {
+   "case_id": "flaky-check",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error": {
+     "$absent": true
+    },
+    "output.data.call": 1,
+    "scores.ok.score": 1,
+    "scores.flaky-check.score": 1
+   }
+  },
+  {
+   "case_id": "flaky-judge",
+   "trial": 1,
+   "facts": {
+    "attempts": 1,
+    "error": {
+     "$absent": true
+    },
+    "output.data.call": 1,
+    "scores.ok.score": 1,
+    "scores.flaky-judge.score": 1
+   }
+  }
+ ]
+}

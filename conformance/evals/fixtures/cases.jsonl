@@ -1,0 +1,3 @@
+{"id": "charged", "input": {"data": {"subject": "Charged twice", "body": "billed twice"}}, "expected": {"s": {"data.queue": "billing"}}}
+
+{"id": "with-file", "input": {"data": {"subject": "Reset", "body": "password reset", "doc": {"type": "file", "path": "fixtures/note.txt"}}}, "expected": {"s": {"data.queue": "account"}}}

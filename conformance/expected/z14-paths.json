@@ -1,0 +1,161 @@
+{
+ "about": "Output paths and JSON equality; a scorer with no pass rule lists any case below 1.",
+ "eval": "evals/z14-paths.eval.yaml",
+ "status": "passed",
+ "n_rows": 1,
+ "scores": {
+  "list-index": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "numeric-key": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "present-null": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "int-vs-float": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "whole-list": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "key-order": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "tool-turn": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "tool-args": {
+   "value": 1,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "missing-is-not-null": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "out-of-range": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "dotted-key": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "list-order": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "bool-not-number": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "text-not-number": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "case-sensitive": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "reply-missing": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "tool-args-typed": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "no-reply-contains": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "p"
+   ]
+  },
+  "reply-absent": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ }
+}

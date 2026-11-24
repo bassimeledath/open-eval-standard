@@ -1,0 +1,6 @@
+oes: 1
+name: bad-cases-file
+description: A line of the cases file has no input.
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: {file: bad-cases.jsonl}

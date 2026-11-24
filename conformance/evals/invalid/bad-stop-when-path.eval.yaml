@@ -1,0 +1,5 @@
+oes: 1
+name: bad-stop-when-path
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {message: hi, script: [more], stop_when: {result.done: true}}, expected: {s: {data.q: 1}}}]

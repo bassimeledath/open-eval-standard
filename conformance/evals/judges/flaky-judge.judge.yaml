@@ -1,0 +1,4 @@
+name: flaky-judge
+prompt: |
+  Pass if the agent answered.
+  <<judge: if flaky-judge-needle => !flaky judge pass>> <<judge: else => pass>>

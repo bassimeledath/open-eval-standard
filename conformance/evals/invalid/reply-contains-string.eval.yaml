@@ -1,0 +1,6 @@
+oes: 1
+name: reply-contains-string
+description: reply_contains needs a list of texts, not one text.
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: reply_contains, pass: {mean: 1}}]
+cases: [{id: a, input: {message: hi}, expected: {s: refund}}]

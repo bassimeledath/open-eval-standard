@@ -1,0 +1,6 @@
+oes: 1
+name: judge-bad-choice
+description: A choice scores outside 0 to 1.
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: j, judge: bad-choice-judge, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {}}}]

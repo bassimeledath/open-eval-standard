@@ -1,0 +1,41 @@
+{
+ "about": "Single-turn data agent; mean rule; latency gate.",
+ "eval": "evals/z01-triage.eval.yaml",
+ "status": "passed",
+ "n_rows": 3,
+ "cases": {
+  "total": 3,
+  "errored": []
+ },
+ "scores": {
+  "right-queue": {
+   "value": 0.6667,
+   "passed": true,
+   "scored": 3,
+   "skipped": 0,
+   "failing_cases": [
+    "shipping-late"
+   ]
+  },
+  "fast": {
+   "passed": true
+  }
+ },
+ "result": {
+  "tags": [],
+  "metadata": {},
+  "models.judge": null,
+  "models.user": null
+ },
+ "rows": [
+  {
+   "case_id": "charged-twice",
+   "trial": 1,
+   "facts": {
+    "tags": [],
+    "cost_usd.judges": null,
+    "cost_usd.user": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,1 @@
+{"id": "a", "input": {"data": {}}, "input": {"data": {"x": 1}}, "expected": {"s": {"data.q": 1}}}

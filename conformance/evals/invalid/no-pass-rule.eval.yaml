@@ -1,0 +1,5 @@
+oes: 1
+name: no-pass-rule
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals}]
+cases: [{id: a, input: {data: {}}, expected: {s: {data.q: 1}}}]

@@ -1,0 +1,5 @@
+oes: 1
+name: trial-rule-on-run-scorer
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: fast, check: latency_p95_ms, pass: {mean: 0.5}}]
+cases: [{id: a, input: {data: {}}}]

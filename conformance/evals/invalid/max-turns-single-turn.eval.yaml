@@ -1,0 +1,6 @@
+oes: 1
+name: max-turns-single-turn
+description: max_turns needs script or persona.
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {message: hi, max_turns: 3}, expected: {s: {data.q: 1}}}]

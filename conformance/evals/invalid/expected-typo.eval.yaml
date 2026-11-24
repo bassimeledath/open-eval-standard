@@ -1,0 +1,5 @@
+oes: 1
+name: expected-typo
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: right-queue, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {}}, expected: {right_queue: {data.queue: billing}}}]

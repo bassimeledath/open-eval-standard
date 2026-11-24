@@ -1,0 +1,51 @@
+{
+ "about": "messages include the agent's earlier replies; one session_id per trial, same on every turn; content parts.",
+ "eval": "evals/z06-chat.eval.yaml",
+ "status": "passed",
+ "n_rows": 4,
+ "cases": {
+  "total": 4,
+  "errored": []
+ },
+ "scores": {
+  "transcript": {
+   "value": 1,
+   "passed": true,
+   "scored": 4,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "mentions": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 3,
+   "failing_cases": []
+  },
+  "sessions": {
+   "value": 1,
+   "passed": true
+  }
+ },
+ "rows": [
+  {
+   "case_id": "data-agent-with-replies",
+   "trial": 1,
+   "facts": {
+    "output.transcript": {
+     "$len": 2
+    },
+    "output.transcript.0.role": "assistant"
+   }
+  },
+  {
+   "case_id": "scripted-three",
+   "trial": 1,
+   "facts": {
+    "output.transcript": {
+     "$len": 6
+    }
+   }
+  }
+ ]
+}

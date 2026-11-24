@@ -1,0 +1,8 @@
+oes: 1
+name: z09c-zero-cost
+description: An agent that reports a cost of 0 is free, not unknown.
+target: {command: "python3 agents/fake.py priced"}
+scorers:
+  - {name: cheap, check: cost_per_trial_usd, pass: {max: 1.0}}
+cases:
+  - {id: free, input: {data: {cost: 0}}}

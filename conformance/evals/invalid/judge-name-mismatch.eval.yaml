@@ -1,0 +1,6 @@
+oes: 1
+name: judge-name-mismatch
+description: A judge whose name doesn't match its file (SPEC 9.2).
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: j, judge: misnamed, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {}}}]

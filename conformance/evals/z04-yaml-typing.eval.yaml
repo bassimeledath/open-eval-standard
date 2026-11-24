@@ -1,0 +1,35 @@
+oes: 1
+name: z04-yaml-typing
+description: >
+  YAML 1.2 core schema. The agent returns the strings "no", "yes", "2026-04-15", "0755", "NO", "1.10",
+  and the numbers 755 and 1.1. Unquoted no, yes, NO and dates stay text; unquoted 0755 and 1.10 are numbers.
+target: {command: "python3 agents/fake.py fixed_strings"}
+scorers:
+  - {name: unquoted-no, check: equals, pass: {each: 1}}
+  - {name: quoted-no, check: equals, pass: {each: 1}}
+  - {name: unquoted-yes, check: equals, pass: {each: 1}}
+  - {name: unquoted-date, check: equals, pass: {each: 1}}
+  - {name: unquoted-country, check: equals, pass: {each: 1}}
+  - {name: quoted-octal, check: equals, pass: {each: 1}}
+  - {name: unquoted-octal-is-number, check: equals, pass: {each: 1}}
+  - {name: quoted-version, check: equals, pass: {each: 1}}
+  - {name: unquoted-version-is-number, check: equals, pass: {each: 1}}
+  - {name: false-is-bool, check: equals, pass: {each: 1}}
+  - {name: unquoted-octal-not-text, check: equals}
+  - {name: unquoted-version-not-text, check: equals}
+cases:
+  - id: strings
+    input: {data: {}}
+    expected:
+      unquoted-no: {data.answer: no}
+      quoted-no: {data.answer: "no"}
+      unquoted-yes: {data.yes_word: yes}
+      unquoted-date: {data.due: 2026-04-15}
+      unquoted-country: {data.country: NO}
+      quoted-octal: {data.code: "0755"}
+      unquoted-octal-is-number: {data.n755: 0755}
+      quoted-version: {data.ver: "1.10"}
+      unquoted-version-is-number: {data.n11: 1.10}
+      false-is-bool: {data.flag: false}
+      unquoted-octal-not-text: {data.code: 0755}
+      unquoted-version-not-text: {data.ver: 1.10}

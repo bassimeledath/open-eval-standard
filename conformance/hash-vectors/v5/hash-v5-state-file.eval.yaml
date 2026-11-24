@@ -1,0 +1,6 @@
+oes: 1
+name: hash-v5-state-file
+description: A file object in state is left alone, so it is not hashed (SPEC 4.2).
+target: {command: "python3 agents/fake.py empty"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {doc: {type: file, path: fixtures/used.txt}}, state: {doc: {type: file, path: fixtures/state-only.txt}}}, expected: {s: {data.q: 1}}}]

@@ -1,0 +1,29 @@
+{
+  "name": "oes-runner",
+  "version": "0.1.0",
+  "description": "Reference TypeScript runner for the Open Eval Standard (OES)",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "oes": "dist/oes.js"
+  },
+  "files": [
+    "dist",
+    "schemas"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "sync-schemas": "node -e \"const fs=require('fs');fs.mkdirSync('schemas',{recursive:true});for(const f of fs.readdirSync('../../skills/oes'))if(f.endsWith('.schema.json'))fs.copyFileSync('../../skills/oes/'+f,'schemas/'+f)\""
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  }
+}

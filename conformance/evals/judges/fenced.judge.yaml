@@ -1,0 +1,4 @@
+name: fenced
+prompt: |
+  Pass if there is a reply. (The fake judge wraps its JSON in a code fence, with prose around it.)
+  <<judge: else => !fenced pass>>

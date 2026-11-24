@@ -1,0 +1,5 @@
+oes: 1
+name: missing-judge
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: j, judge: does-not-exist, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {}}}]

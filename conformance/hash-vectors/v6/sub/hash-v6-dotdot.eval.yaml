@@ -1,0 +1,6 @@
+oes: 1
+name: hash-v6-dotdot
+description: An input outside the eval's folder hashes as ../shared/doc.txt (SPEC 8.2).
+target: {command: "python3 agents/fake.py empty"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {doc: {type: file, path: ../shared/doc.txt}}}, expected: {s: {data.q: 1}}}]

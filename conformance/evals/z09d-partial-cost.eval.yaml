@@ -1,0 +1,10 @@
+oes: 1
+name: z09d-partial-cost
+description: The agent's mean cost covers only trials where it reported one; (0.02 + 0) / 2 = 0.01, not 0.02 / 3.
+target: {command: "python3 agents/fake.py priced"}
+scorers:
+  - {name: cost, check: cost_per_trial_usd, pass: {min: 0.009}}
+cases:
+  - {id: paid, input: {data: {cost: 0.02}}}
+  - {id: unknown, input: {data: {}}}
+  - {id: free, input: {data: {cost: 0}}}

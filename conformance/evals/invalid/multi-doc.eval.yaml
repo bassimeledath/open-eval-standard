@@ -1,0 +1,8 @@
+oes: 1
+name: multi-doc
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {}}, expected: {s: {data.q: 1}}}]
+---
+oes: 1
+name: multi-doc-2

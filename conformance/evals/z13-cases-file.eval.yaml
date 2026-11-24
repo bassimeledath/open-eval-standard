@@ -1,0 +1,6 @@
+oes: 1
+name: z13-cases-file
+description: A JSONL cases file with a blank line. Paths inside it are relative to the eval file, not the cases file.
+target: {command: "python3 agents/fake.py triage"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}]
+cases: {file: fixtures/cases.jsonl}

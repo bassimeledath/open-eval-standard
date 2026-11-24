@@ -1,0 +1,2 @@
+{"id": "a", "input": {"data": {}}, "expected": {"s": {"data.queue": "billing"}}}
+{"id": "b", "expected": {"s": {"data.queue": "billing"}}}

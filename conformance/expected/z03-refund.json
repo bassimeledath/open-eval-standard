@@ -1,0 +1,83 @@
+{
+ "about": "HTTP target, tools with args (20 equals 20.0), state, case-insensitive reply text, tool_calls carry their turn.",
+ "eval": "evals/z03-refund.eval.yaml",
+ "status": "passed",
+ "n_rows": 2,
+ "cases": {
+  "total": 2,
+  "errored": []
+ },
+ "scores": {
+  "refunds": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 1,
+   "failing_cases": []
+  },
+  "went-through": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 1,
+   "failing_cases": []
+  },
+  "never-deletes": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "timeline": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 1,
+   "failing_cases": []
+  },
+  "no-promises": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 1,
+   "failing_cases": []
+  }
+ },
+ "result": {
+  "tags": [
+   "refunds",
+   "tools"
+  ],
+  "metadata": {
+   "owner": "support-team",
+   "tier": 1
+  }
+ },
+ "rows": [
+  {
+   "case_id": "unknown-order",
+   "trial": 1,
+   "facts": {
+    "tags": [
+     "negative"
+    ]
+   }
+  },
+  {
+   "case_id": "damaged-item",
+   "trial": 1,
+   "facts": {
+    "tags": [],
+    "output.tool_calls.1.turn": 1,
+    "output.tool_calls.1.name": "refund",
+    "output.transcript": {
+     "$len": 2
+    },
+    "output.transcript.1.role": "assistant",
+    "output.state.orders.1042.status": "refunded",
+    "input.state.orders.1042.status": "delivered"
+   }
+  }
+ ]
+}

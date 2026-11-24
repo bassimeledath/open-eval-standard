@@ -1,0 +1,16 @@
+oes: 1
+name: z17-retries
+description: >
+  Section 8.1. A flaky target reruns the trial; a flaky check, judge or run check reruns only itself.
+  The agent counts its calls per case (data.call), and the ok scorer runs first, so a rerun trial would show call 2.
+target: {command: "python3 agents/fake.py misbehave"}
+scorers:
+  - {name: ok, check: equals, pass: {each: 1}}
+  - {name: flaky-check, check: {command: "python3 evals/checks/flaky_check.py"}, pass: {each: 1}}
+  - {name: flaky-judge, judge: flaky-judge, pass: {each: 1}}
+  - {name: flaky-run, check: {command: "python3 evals/checks/flaky_run.py"}, scope: run, pass: {min: 1}}
+cases:
+  - {id: steady, input: {data: {mode: counted, key: steady}}, expected: {ok: {data.call: 1}}}
+  - {id: flaky-target, input: {data: {mode: flaky}}, expected: {ok: {data.ok: true}}}
+  - {id: flaky-check, input: {data: {mode: counted, key: flaky-check}}, expected: {ok: {data.call: 1}, flaky-check: fail-once}}
+  - {id: flaky-judge, input: {data: {mode: counted, key: flaky-judge, note: flaky-judge-needle}}, expected: {ok: {data.call: 1}}}

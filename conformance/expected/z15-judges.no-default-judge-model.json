@@ -1,0 +1,12 @@
+{
+ "about": "models.judge leaves out judges whose model is null: with OES_JUDGE_MODEL unset, only own-model names one, so it's that name, not a list.",
+ "eval": "evals/z15-judges.eval.yaml",
+ "env": {
+  "OES_JUDGE_MODEL": null
+ },
+ "status": "passed",
+ "n_rows": 2,
+ "result": {
+  "models.judge": "fake-judge-special"
+ }
+}

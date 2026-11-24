@@ -1,0 +1,100 @@
+{
+ "about": "Judges through the LLM command: transcript, input and expected entry reach the judge; case-insensitive choices; custom choices; the judge file's model wins over OES_JUDGE_MODEL.",
+ "eval": "evals/z15-judges.eval.yaml",
+ "status": "passed",
+ "n_rows": 2,
+ "scores": {
+  "polite": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "criteria": {
+   "value": 0.5,
+   "passed": null,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": [
+    "b"
+   ]
+  },
+  "shouty": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "graded": {
+   "value": 0.5,
+   "passed": null,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": [
+    "a",
+    "b"
+   ]
+  },
+  "own-model": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "sees-input": {
+   "value": 0.5,
+   "passed": null,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": [
+    "b"
+   ]
+  },
+  "fenced": {
+   "value": 1,
+   "passed": true,
+   "scored": 2,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "result": {
+  "cost_usd.judges": 0.007,
+  "cost_usd.user": null,
+  "models.judge": {
+   "$set": [
+    "fake-judge-1",
+    "fake-judge-special"
+   ]
+  },
+  "models.user": null
+ },
+ "rows": [
+  {
+   "case_id": "a",
+   "trial": 1,
+   "facts": {
+    "scores.polite.score": 1,
+    "scores.polite.choice": "pass",
+    "scores.graded.score": 0.5,
+    "scores.graded.choice": "ok",
+    "scores.criteria.score": 1,
+    "scores.fenced.choice": "pass",
+    "cost_usd.judges": 0.007
+   }
+  },
+  {
+   "case_id": "b",
+   "trial": 1,
+   "facts": {
+    "scores.shouty.choice": "pass",
+    "scores.criteria.score": 0,
+    "scores.sees-input.score": 0,
+    "scores.shouty.score": 1
+   }
+  }
+ ]
+}

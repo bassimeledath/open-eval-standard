@@ -1,0 +1,15 @@
+oes: 1
+name: hash-v3-inputs
+description: Files in data, a folder, a message part and a script item; one file used by two cases; sorting by bytes.
+target: {command: "python3 agents/fake.py empty"}
+scorers: [{name: s, check: equals, pass: {each: 1}}]
+cases:
+  - id: a
+    input:
+      data: {doc: {type: file, path: fixtures/doc.txt}, dir: {type: file, path: fixtures/folder}}
+      script: [{data: {more: {type: file, path: fixtures/folder-b.txt}}}, [{type: file, path: fixtures/under_score.txt}]]
+    expected: {s: {data.q: 1}}
+  - id: b
+    input:
+      message: [{type: text, text: see file}, {type: file, path: fixtures/Zeta.txt, mime: text/plain}]
+      data: {doc: {type: file, path: fixtures/doc.txt}}

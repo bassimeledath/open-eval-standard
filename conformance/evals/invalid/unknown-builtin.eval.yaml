@@ -1,0 +1,5 @@
+oes: 1
+name: unknown-builtin
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equal, pass: {mean: 1}}]
+cases: [{id: a, input: {data: {}}, expected: {s: {data.q: 1}}}]

@@ -1,0 +1,5 @@
+oes: 1
+name: dup-scorers
+target: {command: "python3 agents/fake.py boom"}
+scorers: [{name: s, check: equals, pass: {mean: 1}}, {name: s, check: reply_contains}]
+cases: [{id: a, input: {data: {}}, expected: {s: {data.q: 1}}}]

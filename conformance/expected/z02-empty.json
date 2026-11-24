@@ -1,0 +1,52 @@
+{
+ "about": "Rule 9.3: a target that returns {} fails. Output keys the last turn did not return are left out.",
+ "eval": "evals/z02-empty.eval.yaml",
+ "status": "failed",
+ "n_rows": 3,
+ "cases": {
+  "total": 3,
+  "errored": []
+ },
+ "scores": {
+  "right-queue": {
+   "value": 0,
+   "passed": false,
+   "scored": 3,
+   "skipped": 0,
+   "failing_cases": [
+    "charged-twice",
+    "reset-email",
+    "shipping-late"
+   ]
+  },
+  "fast": {
+   "passed": true
+  }
+ },
+ "rows": [
+  {
+   "case_id": "charged-twice",
+   "trial": 1,
+   "facts": {
+    "output.reply": {
+     "$absent": true
+    },
+    "output.data": {
+     "$absent": true
+    },
+    "output.state": {
+     "$absent": true
+    },
+    "output.turns": [
+     {}
+    ],
+    "output.transcript": [],
+    "output.tool_calls": [],
+    "attempts": 1,
+    "error": {
+     "$absent": true
+    }
+   }
+  }
+ ]
+}

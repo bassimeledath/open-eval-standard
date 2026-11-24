@@ -1,0 +1,28 @@
+{
+ "about": "The output is kept exactly as the agent returned it; relative file paths are not rewritten.",
+ "eval": "evals/z22-output-untouched.eval.yaml",
+ "status": "passed",
+ "n_rows": 1,
+ "scores": {
+  "same-output": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "rows": [
+  {
+   "case_id": "relative-path",
+   "trial": 1,
+   "facts": {
+    "output.data.out": {
+     "type": "file",
+     "path": "out/report.txt"
+    },
+    "output.turns.0.data.dir": "./out"
+   }
+  }
+ ]
+}

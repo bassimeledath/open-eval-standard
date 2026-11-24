@@ -1,0 +1,4 @@
+name: criteria
+prompt: |
+  Does the output meet every criterion it was given? Pass if so.
+  <<judge: if criterion-alpha => pass>> <<judge: else => fail>>

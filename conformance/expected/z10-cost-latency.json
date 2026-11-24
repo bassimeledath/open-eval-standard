@@ -1,0 +1,56 @@
+{
+ "about": "Trial cost sums its turns; a 300 ms agent fails a 250 ms p95 gate.",
+ "eval": "evals/z10-cost-latency.eval.yaml",
+ "status": "failed",
+ "n_rows": 4,
+ "scores": {
+  "cost": {
+   "value": 0.015,
+   "passed": true
+  },
+  "snappy": {
+   "passed": false
+  },
+  "replied": {
+   "value": 1,
+   "passed": true,
+   "scored": 4,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "result": {
+  "cost_usd.agent": 0.015,
+  "cost_usd.judges": null,
+  "cost_usd.user": null
+ },
+ "rows": [
+  {
+   "case_id": "two-turns",
+   "trial": 1,
+   "facts": {
+    "cost_usd.agent": 0.02,
+    "latency_ms": {
+     "$len": 2
+    }
+   }
+  },
+  {
+   "case_id": "two-turns",
+   "trial": 2,
+   "facts": {
+    "cost_usd.agent": 0.02
+   }
+  },
+  {
+   "case_id": "one-turn",
+   "trial": 2,
+   "facts": {
+    "cost_usd.agent": 0.01,
+    "latency_ms": {
+     "$len": 1
+    }
+   }
+  }
+ ]
+}

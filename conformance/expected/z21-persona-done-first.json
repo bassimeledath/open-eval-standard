@@ -1,0 +1,43 @@
+{
+ "about": "A user that ends before the first turn: that trial did not run, its row has no scores and no error, and the run is not_evaluated.",
+ "eval": "evals/z21-persona-done-first.eval.yaml",
+ "status": "not_evaluated",
+ "n_rows": 2,
+ "cases": {
+  "total": 2,
+  "errored": []
+ },
+ "scores": {
+  "replied": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "rows": [
+  {
+   "case_id": "runs",
+   "trial": 1,
+   "facts": {
+    "scores.replied.score": 1,
+    "error": {
+     "$absent": true
+    }
+   }
+  },
+  {
+   "case_id": "never-starts",
+   "trial": 1,
+   "facts": {
+    "scores": {},
+    "error": {
+     "$absent": true
+    },
+    "output.turns": [],
+    "output.transcript": []
+   }
+  }
+ ]
+}

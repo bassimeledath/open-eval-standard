@@ -1,0 +1,26 @@
+{
+ "about": "Unknown cost is null, not 0; a cost gate on it is not_evaluated.",
+ "eval": "evals/z09b-no-cost-reported.eval.yaml",
+ "status": "not_evaluated",
+ "n_rows": 1,
+ "scores": {
+  "cheap": {
+   "value": null,
+   "passed": null
+  }
+ },
+ "result": {
+  "cost_usd.agent": null,
+  "cost_usd.judges": null,
+  "cost_usd.user": null
+ },
+ "rows": [
+  {
+   "case_id": "a",
+   "trial": 1,
+   "facts": {
+    "cost_usd.agent": null
+   }
+  }
+ ]
+}

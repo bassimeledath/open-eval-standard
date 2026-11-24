@@ -1,0 +1,38 @@
+oes: 1
+name: z20-persona-turns
+description: >
+  Section 5. Who speaks first, max_turns, stop_when on turn 1, [done] after trimming, a user that sees
+  neither data nor state, the user never asked again once the case has ended, and a failing simulated user that reruns the whole trial.
+target: {http: "http://127.0.0.1:8811/chat"}
+scorers:
+  - {name: shape, check: equals, pass: {each: 1}}
+  - {name: turns, check: {command: "python3 evals/checks/turn_count.py"}, pass: {each: 1}}
+cases:
+  - id: user-speaks-first
+    input: {persona: "<<user: if got 1 messages => [done]>> <<user: else => hello>>", max_turns: 5}
+    expected: {shape: {data.n_messages: 1, data.last_user: hello}, turns: 1}
+  - id: agent-spoke-last
+    input:
+      messages: [{role: user, content: hi}, {role: assistant, content: "What do you need?"}]
+      persona: "<<user: if got 3 messages => [done]>> <<user: else => tell me more>>"
+      max_turns: 5
+    expected: {shape: {data.roles: [user, assistant, user], data.last_user: tell me more}, turns: 1}
+  - id: message-first
+    input: {message: hi, persona: "<<user: if got 3 messages => !padded-done>> <<user: else => more please>>", max_turns: 5}
+    expected: {shape: {data.n_messages: 3, data.last_user: more please}, turns: 2}
+  - id: max-turns
+    input: {message: hi, persona: "<<user: else => !counted max-turns again>>", max_turns: 2}
+    expected: {shape: {data.n_messages: 3, data.last_user: again}, turns: 2}
+  - id: stop-on-turn-1
+    input: {message: hi, persona: "<<user: else => !counted stop-on-turn-1 again>>", max_turns: 5, stop_when: {data.n_messages: 1}}
+    expected: {shape: {data.n_messages: 1}, turns: 1}
+  - id: blind-to-data-and-state
+    input:
+      data: {secret: data-needle-77}
+      state: {hint: state-needle-88}
+      persona: "<<user: if data-needle-77 => LEAK>> <<user: if state-needle-88 => LEAK>> <<user: if got 1 messages => [done]>> <<user: else => hello>>"
+      max_turns: 3
+    expected: {shape: {data.last_user: hello, data.saw_data: {secret: data-needle-77}}, turns: 1}
+  - id: flaky-user
+    input: {message: hi, persona: "<<user: if got 1 messages => !flaky user [done]>> <<user: else => hello>>", max_turns: 3}
+    expected: {shape: {data.n_messages: 1}, turns: 1}

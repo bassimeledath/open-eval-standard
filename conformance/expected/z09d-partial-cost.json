@@ -1,0 +1,38 @@
+{
+ "about": "The agent's mean cost covers only trials where it reported a cost.",
+ "eval": "evals/z09d-partial-cost.eval.yaml",
+ "status": "passed",
+ "n_rows": 3,
+ "scores": {
+  "cost": {
+   "value": 0.01,
+   "passed": true
+  }
+ },
+ "result": {
+  "cost_usd.agent": 0.01
+ },
+ "rows": [
+  {
+   "case_id": "paid",
+   "trial": 1,
+   "facts": {
+    "cost_usd.agent": 0.02
+   }
+  },
+  {
+   "case_id": "unknown",
+   "trial": 1,
+   "facts": {
+    "cost_usd.agent": null
+   }
+  },
+  {
+   "case_id": "free",
+   "trial": 1,
+   "facts": {
+    "cost_usd.agent": 0
+   }
+  }
+ ]
+}

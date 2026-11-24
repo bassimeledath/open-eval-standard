@@ -1,0 +1,4 @@
+name: polite
+prompt: |
+  Is the reply polite or at least neutral? Pass if so.
+  <<judge: if got 1 messages => pass>> <<judge: else => fail>>

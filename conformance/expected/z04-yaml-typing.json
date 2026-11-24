@@ -1,0 +1,100 @@
+{
+ "about": "YAML 1.2 core schema: no/yes/NO/dates stay text; unquoted 0755 is 755 and 1.10 is 1.1.",
+ "eval": "evals/z04-yaml-typing.eval.yaml",
+ "status": "passed",
+ "n_rows": 1,
+ "cases": {
+  "total": 1,
+  "errored": []
+ },
+ "scores": {
+  "unquoted-no": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "quoted-no": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "unquoted-yes": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "unquoted-date": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "unquoted-country": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "quoted-octal": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "unquoted-octal-is-number": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "quoted-version": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "unquoted-version-is-number": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "false-is-bool": {
+   "value": 1,
+   "passed": true,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": []
+  },
+  "unquoted-octal-not-text": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "strings"
+   ]
+  },
+  "unquoted-version-not-text": {
+   "value": 0,
+   "passed": null,
+   "scored": 1,
+   "skipped": 0,
+   "failing_cases": [
+    "strings"
+   ]
+  }
+ }
+}

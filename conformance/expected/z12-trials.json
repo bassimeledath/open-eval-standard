@@ -1,0 +1,47 @@
+{
+ "about": "trial_count 3; each vs mean rules; trials run one at a time.",
+ "eval": "evals/z12-trials.eval.yaml",
+ "status": "failed",
+ "n_rows": 3,
+ "scores": {
+  "strict": {
+   "value": 0.6667,
+   "passed": false,
+   "scored": 3,
+   "skipped": 0,
+   "failing_cases": [
+    "c"
+   ]
+  },
+  "lenient": {
+   "value": 0.6667,
+   "passed": true,
+   "scored": 3,
+   "skipped": 0,
+   "failing_cases": []
+  }
+ },
+ "rows": [
+  {
+   "case_id": "c",
+   "trial": 1,
+   "facts": {
+    "scores.strict.score": 1
+   }
+  },
+  {
+   "case_id": "c",
+   "trial": 2,
+   "facts": {
+    "scores.strict.score": 1
+   }
+  },
+  {
+   "case_id": "c",
+   "trial": 3,
+   "facts": {
+    "scores.strict.score": 0
+   }
+  }
+ ]
+}
