@@ -6,6 +6,7 @@ scorers:
   - {name: refunds, check: tool_called, pass: {each: 1}}
   - {name: never-deletes, check: tool_not_called, pass: {each: 1}}
   - {name: says-timeline, check: reply_contains, pass: {mean: 0.9}}
+  - {name: no-promises, check: reply_not_contains, pass: {each: 1}}
 cases:
   - id: damaged-item
     input:
@@ -15,3 +16,4 @@ cases:
       refunds: [{name: refund, args: {order_id: "1042", amount: 20}}]
       never-deletes: [delete_order]
       says-timeline: ["5 business days"]
+      no-promises: ["guaranteed", "instantly"]

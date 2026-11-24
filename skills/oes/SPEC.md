@@ -1,6 +1,6 @@
 # Open Eval Standard (OES)
 
-Version 1, draft 2.
+Version 1, draft 3.
 
 ## 1. Purpose
 
@@ -28,7 +28,7 @@ The app does not change how it is built. It exposes one entry point, the target,
 
 Write one eval per file, named `<name>.eval.yaml`, in an `evals/` folder in the app's repository. The eval does not name the model or the app version. The run supplies them, so the same eval runs on every version of the app.
 
-Names of evals, scorers and judges use lowercase letters, digits, hyphens and underscores. Paths in an eval file are relative to that file.
+Names of evals, scorers and judges use lowercase letters, digits, hyphens and underscores. Paths in an eval file, and in its cases file, are relative to the eval file.
 
 | Field | Required | Meaning |
 |---|---|---|
@@ -49,6 +49,8 @@ The target is one of:
 |---|---|
 | `{command: "python -m app.eval_entry"}` | The runner starts the command for each turn, writes the request as JSON to stdin and reads the response as JSON from stdout. |
 | `{http: "http://localhost:8000/eval"}` | The runner POSTs the request as JSON and reads the response as JSON. |
+
+Either form can add `timeout_s`, the most seconds one call may take, such as `{command: "...", timeout_s: 600}`. Without it, the runner's default applies.
 
 Request:
 
@@ -91,7 +93,7 @@ A message is `{role, content}`, with `role` of `user` or `assistant`. `content` 
 | `script` | Fixed user lines, sent one per turn after `message` or `messages`. |
 | `persona` | A simulated user, in plain text: who they are, what they want, what they know and when they stop. |
 | `max_turns` | Required with `script` or `persona`. The most turns the runner will run. |
-| `stop_when` | Output values that end the conversation early, such as `{state.done: true}`. |
+| `stop_when` | Output values that end the conversation early, such as `{state.done: true}`. A list ends it when any item matches: `[{state.solved: true}, {state.handed_off: true}]`. |
 
 The input decides how the test case runs:
 
@@ -101,7 +103,7 @@ The input decides how the test case runs:
 
 A scripted or simulated test case also ends at `max_turns`, or when `stop_when` matches the target's response.
 
-The simulated user gets the persona and the transcript. It replies with the next user message, or with exactly `[done]` to end the conversation. The runner records which model played the user.
+The simulated user gets the persona and the transcript. It replies with the next user message, or with exactly `[done]` to end the conversation. With no `message` or `messages`, it speaks first. The runner records which model played the user.
 
 ## 6. Scorers
 
@@ -111,11 +113,12 @@ The simulated user gets the persona and the transcript. It replies with the next
 | `check` | One of | A built-in check, or a custom check: `{command: ...}` or `{http: ...}`. |
 | `judge` | One of | The name of a judge file. See 7. |
 | `scope` | No | `trial` (default) or `run`. Only custom checks set it. |
+| `params` | No | Settings for a custom check, such as `{k: 5}`. Sent to it on every call. |
 | `pass` | No | A pass rule. |
 
 A scorer reads its own entry in `expected`: the scorer `right_queue` reads `expected.right_queue`. So an eval can have many scorers of the same kind, each with its own expectations and pass rule.
 
-A trial scorer scores each trial from 0 to 1. A built-in check skips a test case that has no entry for it. A judge runs on every test case and reads the entry if there is one. A run scorer scores the whole run once and returns a number.
+A trial scorer scores each trial from 0 to 1. A built-in check skips a test case that has no entry for it. A judge runs on every test case and reads the entry if there is one. A run scorer scores the whole run once and returns a number. Run scorers go after every trial scorer, so they can read the trial scores.
 
 Pass rules:
 
@@ -134,17 +137,18 @@ Built-in checks:
 |---|---|---|---|
 | `equals` | Trial | Output paths and values: `{data.queue: billing, state.handed_off: false}` | Every path has exactly that value. |
 | `reply_contains` | Trial | Texts: `[refund, 5 days]` | Each text appears in at least one app reply. |
+| `reply_not_contains` | Trial | Texts: `[password, guaranteed]` | None of the texts appears in any app reply. |
 | `tool_called` | Trial | Tool names, or `{name, args}`: `[{name: refund, args: {amount: 20}}]` | Each listed tool was called at least once. Listed args must match; others are ignored. |
 | `tool_not_called` | Trial | Tool names: `[delete_account]` | None of the listed tools was called. |
 | `latency_p95_ms` | Run | None | Returns the 95th percentile of turn latency, in milliseconds. |
 | `cost_per_trial_usd` | Run | None | Returns the mean cost of one trial, in US dollars. |
 
-A trial check scores 1 or 0. An output path is dot-separated: `data.queue`, `state.handed_off` or `tool_calls.0.name`. `data` and `state` are what the app returned on its last turn. A missing path never equals a value, not even `null`.
+A trial check scores 1 or 0. Text matching ignores case. An output path is dot-separated: `data.queue`, `state.handed_off` or `tool_calls.0.name`. `data` and `state` are what the app returned on its last turn. A missing path never equals a value, not even `null`.
 
 A custom check is a command or URL that uses the same JSON in and out as the target:
 
-- Trial scope gets `{input, output, expected}`, where `expected` is the scorer's own entry or `null`. It returns `{score, reason}`, or `{score: null}` to skip the trial.
-- Run scope gets `{rows}`, every trial row of the run (see 8). It returns `{score, reason}`.
+- Trial scope gets `{input, output, expected, params, session_id}`, where `expected` is the scorer's own entry or `null`. It returns `{score, reason}`, or `{score: null}` to skip the trial. It can also return `value`, a raw number such as how far off an amount was. The row logs it, and pass rules ignore it.
+- Run scope gets `{rows, params}`, where `rows` is every trial row of the run, with its scores (see 8). It returns `{score, reason}`.
 
 ## 7. Judges
 
@@ -166,7 +170,7 @@ choices: {pass: 1, fail: 0}
 | `choices` | No | Each answer and its score. Default `{pass: 1, fail: 0}`. |
 | `model` | No | The model to use, as a name the runner understands. Default: the runner's judge model. |
 
-The runner sends the judge model the prompt, the test case's input, the transcript and output, and the scorer's expected entry, if there is one (often a list of rules, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. The runner logs both.
+The runner sends the judge model the prompt, the test case's input (with any files, if the model accepts them), the transcript and output, and the scorer's expected entry, if there is one (often a list of rules, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. The runner logs both.
 
 Prefer two choices. They are easier to agree on and to check against human labels. Before trusting a judge, check it against a few human labels.
 
@@ -184,11 +188,12 @@ A runner may also send the same rows to an eval platform. The local files are th
 | Field | Meaning |
 |---|---|
 | `eval`, `run_id`, `started_at` | The eval, a unique run id and when the run started. |
+| `tags`, `metadata` | Copied from the eval. |
 | `app_version` | A label for the app version under test, such as a git commit. |
 | `models` | Every model that the run used, by role: `app`, `judge`, `user`. Whatever names the runner knows. |
 | `eval_hash` | SHA-256 of the eval file, its cases file and its judge files. |
 | `status` | `passed`, `failed`, `error` or `not_evaluated`. |
-| `scores` | Per scorer: `value` (the mean, or the run number), `passed` (true, false or null if no pass rule), and `failing_cases` (ids of test cases with a trial scoring below 1). |
+| `scores` | Per scorer: `value` (the mean, or the run number), `passed` (true, false or null if no pass rule), and `failing_cases`. |
 | `latency_ms` | p50 and p95 of one turn. |
 | `cost_usd` | Mean cost of one trial, for the app and for the judges. |
 | `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored. |
@@ -202,7 +207,9 @@ Status, in order:
 
 `not_evaluated` is never a pass. No tool may change it to `passed`.
 
-Each row in `rows.jsonl` has `case_id`, `trial`, `input`, `expected`, `output` (the `transcript`, `tool_calls`, and the last `data` and `state`), `scores` (per scorer: `score` and `reason`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
+`failing_cases` lists the test cases that fall short on a trial scorer: a case with any trial below `x` for `{each: x}`, a case whose trials average below `x` for `{mean: x}`, or a case with any trial below 1 when the scorer has no pass rule. Run scorers have no `failing_cases`.
+
+Each row in `rows.jsonl` has `case_id`, `trial`, `tags` (the test case's), `input`, `expected`, `output` (the `transcript`, `tool_calls` each with the `turn` it happened on, and the last `data` and `state`), `scores` (per scorer: `score`, `reason` and any `value`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
 
 Scorers read only the logged rows. So a runner can re-score a saved run without calling the app again.
 
@@ -217,7 +224,7 @@ To compare two versions of an app, run the eval on each and compare the two resu
 ## 9. Rules
 
 1. Check each eval file against `eval.schema.json`. Unknown fields are errors, except inside `metadata`, `data`, `state` and `expected`.
-2. A runner rejects an eval with two test cases or two scorers of the same name.
+2. A runner rejects an eval with two test cases or two scorers of the same name, or with an `expected` key that names no scorer. A typo there would otherwise skip a check without a word.
 3. An eval must be able to fail. Run it once against a target that replies with nothing and calls no tools. If it passes, the test cases or scorers are too weak. The exception is an eval that only checks that something does not happen, such as `tool_not_called`.
 4. A change that breaks existing evals raises `oes`. A new optional field does not.
 5. To add a built-in check, add a row to the table in 6.

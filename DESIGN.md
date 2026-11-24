@@ -85,7 +85,7 @@ The whole format is built from the eight shapes below. Each one lists every fiel
 | Test case | 5 | 2 |
 | Input | 8 | at least 1 |
 | Message | 2 | 2 |
-| Scorer | 5 | 1, plus a check or a judge |
+| Scorer | 6 | 1, plus a check or a judge |
 | Judge | 4 | 2 |
 | What the runner sends the app | 4 | 4 |
 | What the app sends back | 5 | 0 |
@@ -93,9 +93,10 @@ The whole format is built from the eight shapes below. Each one lists every fiel
 ### Eval file
 
 ```yaml
-oes: 1                      # required. The spec version
+oes: 1                           # required. The spec version
 name: ticket-triage              # required. Lowercase letters, digits, - and _
 target: {command: "python -m triage.eval_entry"}   # required. Or {http: "http://..."}
+                                 # either can add timeout_s: 60
 scorers: [ ... ]                 # required. At least one has a pass rule
 cases: [ ... ]                   # required. Or {file: cases.jsonl}
 description: One sentence on what it checks.
@@ -128,6 +129,7 @@ script: ["Hi", "It's order 1042"]   # fixed user lines, one per turn
 persona: A calm adult whose laptop won't join wifi.   # an AI plays this user
 max_turns: 20                    # required with script or persona
 stop_when: {state.done: true}    # end early when the app returns this
+                                 # or a list: [{state.solved: true}, {state.handed_off: true}]
 ```
 
 `script` and `persona` can't be used together, and neither can `message` and `messages`.
@@ -149,10 +151,11 @@ name: right-queue                # required. Unique in the eval
 check: equals                    # a check or a judge, not both
 judge: goal-completion           # the name of a judge file
 scope: trial                     # trial or run. Only custom checks set it
+params: {k: 5}                   # settings for a custom check
 pass: {mean: 0.9}                # each or mean (trial), min or max (run)
 ```
 
-A check is a built-in name (`equals`, `reply_contains`, `tool_called`, `tool_not_called`, `latency_p95_ms`, `cost_per_trial_usd`), or a custom one: `{command: "..."}` or `{http: "..."}`.
+A check is a built-in name (`equals`, `reply_contains`, `reply_not_contains`, `tool_called`, `tool_not_called`, `latency_p95_ms`, `cost_per_trial_usd`), or a custom one: `{command: "..."}` or `{http: "..."}`.
 
 ### Judge
 
@@ -189,8 +192,8 @@ These follow from the shapes above. They're short enough to list here.
 
 | Who | Gets | Returns |
 |---|---|---|
-| Custom check, per try | `input`, `output`, `expected` (its own entry) | `score` (0 to 1, or null to skip) and `reason` |
-| Custom check, per run | `rows`: every try of the run | `score` and `reason` |
+| Custom check, per try | `input`, `output`, `expected` (its own entry), `params`, `session_id` | `score` (0 to 1, or null to skip), `reason`, and optionally `value`, a raw number to log |
+| Custom check, per run | `rows` (every try of the run, with its scores) and `params` | `score` and `reason` |
 | Judge model | the prompt, input, transcript, output and expected entry | `reason` and `choice` |
 | Simulated user | the persona and the transcript | the next user message, or `[done]` |
 
@@ -202,13 +205,14 @@ These follow from the shapes above. They're short enough to list here.
 eval: ticket-triage
 run_id: 2026-11-23-a1b2
 started_at: "2026-11-23T21:30:00Z"
+tags: []                         # copied from the eval, with metadata
 app_version: a1b2c3d             # for example a git commit
 models: {app: "...", judge: "...", user: "..."}
 eval_hash: "sha256:..."          # changes when the eval or a judge changes
 status: passed                   # passed, failed, error or not_evaluated
 scores:
   right-queue: {value: 0.95, passed: true, failing_cases: [reset-email]}
-  fast: {value: 1800, passed: true, failing_cases: []}
+  fast: {value: 1800, passed: true}                     # a run scorer
 latency_ms: {p50: 640, p95: 1800}
 cost_usd: {app: 0.002, judges: 0.0}
 cases: {total: 20, errored: []}
@@ -219,10 +223,11 @@ cases: {total: 20, errored: []}
 ```yaml
 case_id: charged-twice
 trial: 1
+tags: [smoke]                     # the test case's
 input: { ... }
 expected: { ... }
-output: {transcript: [ ... ], tool_calls: [ ... ], data: {queue: billing}, state: {}}
-scores: {right-queue: {score: 1, reason: null}}
+output: {transcript: [ ... ], tool_calls: [ ... ], data: {queue: billing}, state: {}}   # each tool call has its turn
+scores: {right-queue: {score: 1, reason: null}}       # plus value, if a check sent one
 latency_ms: [640]                # one per turn
 cost_usd: 0.002
 error: null                      # or {kind: target, message: "..."}

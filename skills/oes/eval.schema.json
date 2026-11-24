@@ -36,27 +36,33 @@
     "tags": {"type": "array", "items": {"type": "string"}},
     "endpoint": {
       "type": "object",
-      "minProperties": 1,
-      "maxProperties": 1,
       "additionalProperties": false,
+      "oneOf": [{"required": ["command"]}, {"required": ["http"]}],
       "properties": {
         "command": {"type": "string", "minLength": 1},
-        "http": {"type": "string", "pattern": "^https?://"}
+        "http": {"type": "string", "pattern": "^https?://"},
+        "timeout_s": {"type": "number", "exclusiveMinimum": 0}
       }
     },
     "builtin_check": {
-      "enum": ["equals", "reply_contains", "tool_called", "tool_not_called", "latency_p95_ms", "cost_per_trial_usd"]
+      "enum": ["equals", "reply_contains", "reply_not_contains", "tool_called", "tool_not_called", "latency_p95_ms", "cost_per_trial_usd"]
     },
+    "match": {"type": "object", "minProperties": 1},
     "scorer": {
       "type": "object",
       "required": ["name"],
       "additionalProperties": false,
       "oneOf": [{"required": ["check"]}, {"required": ["judge"]}],
+      "dependentSchemas": {
+        "scope": {"required": ["check"], "properties": {"check": {"$ref": "#/$defs/endpoint"}}},
+        "params": {"required": ["check"], "properties": {"check": {"$ref": "#/$defs/endpoint"}}}
+      },
       "properties": {
         "name": {"$ref": "#/$defs/name"},
         "check": {"oneOf": [{"$ref": "#/$defs/builtin_check"}, {"$ref": "#/$defs/endpoint"}]},
         "judge": {"$ref": "#/$defs/name"},
         "scope": {"enum": ["trial", "run"]},
+        "params": {"type": "object"},
         "pass": {
           "type": "object",
           "minProperties": 1,
@@ -140,7 +146,10 @@
         "script": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/content"}},
         "persona": {"type": "string", "minLength": 1},
         "max_turns": {"type": "integer", "minimum": 1},
-        "stop_when": {"type": "object", "minProperties": 1}
+        "stop_when": {"oneOf": [
+          {"$ref": "#/$defs/match"},
+          {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/match"}}
+        ]}
       }
     }
   }

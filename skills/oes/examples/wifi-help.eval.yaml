@@ -13,7 +13,7 @@ cases:
         A calm adult whose laptop stopped joining home wifi after an update.
         Other devices work; say so only if asked. Stop when it works or you are handed off.
       max_turns: 20
-      stop_when: {state.handed_off: true}
+      stop_when: [{state.solved: true}, {state.handed_off: true}]
     expected:
       solved:
         - Asks what changed before suggesting fixes.
