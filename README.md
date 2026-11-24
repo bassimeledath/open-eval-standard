@@ -1,6 +1,6 @@
 # Open Eval Standard (OES)
 
-A simple standard for testing AI agents. Plain YAML files, any language, any model provider.
+A dead simple standard for testing AI agents. Plain YAML files, any language, any model provider.
 
 ![Open Eval Standard flow](docs/oes-diagram.svg)
 
