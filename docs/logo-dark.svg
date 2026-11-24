@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="243" height="96" viewBox="0 0 243 96" role="img" aria-label="OES, Open Eval Standard">
   <title>OES, Open Eval Standard</title>
-  <rect x="8" y="12" width="72" height="72" rx="16" fill="none" stroke="#64748b" stroke-width="4" stroke-dasharray="10 7"/>
+  <path d="M 24 13 C 40 11, 57 14.5, 66 12.5 Q 80.5 12, 79 27 C 81 44, 77.5 60, 80 70.5 Q 79.5 84.5, 65.5 83 C 50 85.5, 36 81.5, 23 84 Q 7.5 83.5, 9.5 69 C 7 52, 10.5 38, 8 26.5 Q 8.5 12, 24 13 Z" fill="none" stroke="#64748b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 7"/>
   <path d="M 27 49 L 39 61 L 62 35" fill="none" stroke="#4ade80" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="100" y="60" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="46" font-weight="800" letter-spacing="2" fill="#f8fafc">OES</text>
   <text x="102" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="500" letter-spacing="0.4" fill="#94a3b8">Open Eval Standard</text>
