@@ -1,6 +1,6 @@
 # Open Eval Standard (OES)
 
-OES is a plain file format for testing AI apps. Each test says what to give your app, what you expect it to do, and how to tell whether it passed. You can use any language or model provider.
+A dead simple standard for testing AI agents. Each test says what to give your agent, what you expect it to do, and how to tell whether it passed. Plain YAML files, any language, any model provider.
 
 ![An engineer reports a 94% score. A colleague asks to run the same evals. They need the script, the spreadsheet, a Slack thread from March, and Dave, who is chained to his laptop.](docs/on-my-eval.jpg)
 
