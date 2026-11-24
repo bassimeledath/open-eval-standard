@@ -13,12 +13,12 @@ An agent here is any AI system that takes an input and replies or acts: a chatbo
 | Term | Meaning |
 |---|---|
 | Eval | A named group of test cases for one agent, plus how to call the agent and how to score it. One file. |
-| Test case | One input, with what we expect. |
+| Test case | One situation to give the agent, with what we expect. |
 | Target | The agent entry point the runner calls. |
 | Turn | One call to the target: it gets an input and returns an output. |
-| Transcript | Every message in a test case's conversation, in order. Empty for an agent with no conversation. |
+| Transcript | Every message sent to the agent and every reply it gave, in order. Empty if there were neither. |
 | State | Data the agent carries from one turn to the next. |
-| Scorer | Gives a trial a score from 0 to 1. A check runs code. A judge asks an LLM. |
+| Scorer | Grades each trial from 0 to 1, or the whole run with one number. A check runs code. A judge asks an LLM. |
 | Trial | One attempt at one test case. A test case can run several trials. |
 | Run | One execution of one eval on one version of the agent. |
 | Result | What a run produced: scores, status, cost and latency. |
@@ -28,7 +28,7 @@ An agent here is any AI system that takes an input and replies or acts: a chatbo
 
 Write one eval per file, named `<name>.eval.yaml`, in an `evals/` folder in the agent's repository. The eval does not name the model or the agent version. The run supplies them, so the same eval runs on every version of the agent.
 
-Names of evals, scorers and judges use lowercase letters, digits, hyphens and underscores. Paths in an eval file, and in its cases file, are relative to the eval file.
+Names of evals, scorers and judges use lowercase letters, digits, hyphens and underscores. Paths in an eval file, and in its cases file, are relative to the eval file. Commands, for targets and custom checks, run from the repository root.
 
 | Field | Required | Meaning |
 |---|---|---|
@@ -58,14 +58,14 @@ Request:
 |---|---|
 | `session_id` | A new id for each trial. The same id for every turn of one trial. |
 | `messages` | The transcript so far, ending with the newest user message. Empty for an agent with no conversation. |
-| `data` | The script item's `data` on a scripted turn that has one. Otherwise the test case's `input.data`, or `{}`. |
+| `data` | The script item's `data` on a scripted turn that has one; it replaces `input.data` for that turn. Otherwise the test case's `input.data`, or `{}`. Keep anything needed across turns in `state`. |
 | `state` | On the first turn, the test case's `input.state`. After that, the `state` the agent returned on the turn before. `{}` if neither. |
 
 Response. Every field is optional:
 
 | Field | Meaning |
 |---|---|
-| `reply` | The agent's text reply for this turn, if it has one. |
+| `reply` | The agent's text output for this turn, if it has one: an answer, a summary, a report. |
 | `data` | Structured output for this turn, such as a label, an extracted record or test results. |
 | `tool_calls` | Each tool the agent called this turn: `{name, args}`, plus `result` or `error` if known. |
 | `state` | The agent's state after this turn. The runner sends it back on the next turn, so the target can be stateless. |
@@ -73,7 +73,7 @@ Response. Every field is optional:
 
 A message is `{role, content}`, with `role` of `user` or `assistant`. `content` is text, or a list of parts: `{type: text, text}` or `{type: file, path, mime}` for images, audio and documents.
 
-A file can also go anywhere in `data`, as the same `{type: file, path, mime}` object. In both places the runner sends `path` as an absolute path, so the target can read the file.
+A file can also go anywhere in `data`, at any depth, as the same `{type: file, path, mime}` object. `path` can be a file or a folder, and `mime` is optional. Each trial gets its own copy, and the runner sends its absolute path, so an agent can change it freely. An agent that changes files, such as a coding agent, returns where its work is in `data`, for example `{repo: /tmp/run-1/todo-app}`, so checks can read it.
 
 ## 5. Test cases
 
@@ -89,12 +89,12 @@ A file can also go anywhere in `data`, as the same `{type: file, path, mime}` ob
 | Field | Meaning |
 |---|---|
 | `message` | One user message. Short for `messages: [{role: user, content: ...}]`. |
-| `messages` | The conversation so far. Use it to start at any point of a real conversation. To have the agent speak first, start with an `assistant` message. |
-| `data` | Any JSON the agent receives, such as a task, a document or a record. An agent with no conversation uses only `data`. |
+| `messages` | The conversation so far. Use it to start at any point of a real conversation. |
+| `data` | A JSON object the agent receives, such as a task, a document or a record. An agent with no conversation uses only `data`. |
 | `state` | The agent's state before the first turn. |
 | `script` | Fixed inputs for the turns after the first, one per turn. An item is a user message (text or parts), or `{data: ...}` for an agent with no conversation, or `{message, data}` for both. |
 | `persona` | A simulated user, in plain text: who they are, what they want, what they know and when they stop. |
-| `max_turns` | Required with `script` or `persona`. The most turns the runner will run. |
+| `max_turns` | Required with `persona`. The most turns the runner will run. |
 | `stop_when` | Output values that end a multi-turn test case early, such as `{state.done: true}`. A list ends it when any item matches: `[{state.solved: true}, {state.handed_off: true}]`. |
 
 There are two kinds of test case. The input decides which, so one eval can mix both:
@@ -102,14 +102,14 @@ There are two kinds of test case. The input decides which, so one eval can mix b
 | Kind | How it runs | Input |
 |---|---|---|
 | **Single-turn** | The runner calls the target once. An agent that makes many tool calls inside that one call is still single-turn. | `message`, `messages` or `data` |
-| **Multi-turn** | The runner calls the target several times in a row, sending `state` back each time. | `script` or `persona`, plus `max_turns` |
+| **Multi-turn** | The runner calls the target several times in a row, sending `state` back each time. | `script`, or `persona` with `max_turns` |
 
 A multi-turn test case gets each next input in one of two ways:
 
-- **Scripted.** `script` lists the inputs. The first turn uses `message`, `messages` or `data` if there is one; otherwise it uses the first script item. It suits chat replays and non-chat sequences alike, such as a task and then a follow-up for a coding agent.
+- **Scripted.** `script` lists the inputs. The first turn uses `message`, `messages` or `data` if there is one; otherwise it uses the first script item. The test case ends after the last item. It suits chat replays and non-chat sequences alike, such as a task and then a follow-up for a coding agent.
 - **Simulated.** `persona`. An LLM plays the user. It writes each next user message, and can end the conversation.
 
-A multi-turn test case also ends at `max_turns`, or when `stop_when` matches the target's response.
+A multi-turn test case also ends at `max_turns`, or when `stop_when` matches the target's response on any turn. `stop_when` uses the same output paths as `equals`.
 
 The simulated user gets the persona and the transcript. It replies with the next user message, or with exactly `[done]` to end the conversation. With no `message` or `messages`, it speaks first. The runner records which model played the user.
 
@@ -124,9 +124,9 @@ The simulated user gets the persona and the transcript. It replies with the next
 | `params` | No | Settings for a custom check, such as `{k: 5}`. Sent to it on every call. |
 | `pass` | No | A pass rule. |
 
-A scorer reads its own entry in `expected`: the scorer `right_queue` reads `expected.right_queue`. So an eval can have many scorers of the same kind, each with its own expectations and pass rule.
+A scorer reads its own entry in `expected`: the scorer `fields` reads `expected.fields`. So an eval can have many scorers of the same kind, each with its own expectations and pass rule.
 
-A trial scorer scores each trial from 0 to 1. A built-in check skips a test case that has no entry for it. A judge runs on every test case and reads the entry if there is one. A run scorer scores the whole run once and returns a number. Run scorers go after every trial scorer, so they can read the trial scores.
+A trial scorer scores each trial from 0 to 1. A built-in check skips a test case that has no entry for it. A judge runs on every test case and reads the entry if there is one. A run scorer scores the whole run once and returns a number. Run scorers go after every trial scorer, so they can read the trial scores. A skipped trial logs `score: null` and counts toward neither `mean` nor `failing_cases`.
 
 Pass rules:
 
@@ -137,7 +137,7 @@ Pass rules:
 | `{min: x}` | Run scorers | The run's number is at least x. |
 | `{max: x}` | Run scorers | The run's number is at most x. |
 
-A scorer with no `pass` rule is reported but does not set the status.
+A scorer with no `pass` rule is reported but does not set the status. A runner rejects a trial rule on a run scorer, and the other way round.
 
 Built-in checks:
 
@@ -151,7 +151,7 @@ Built-in checks:
 | `latency_p95_ms` | Run | None | Returns the 95th percentile of turn latency, in milliseconds. |
 | `cost_per_trial_usd` | Run | None | Returns the mean cost of one trial, in US dollars. |
 
-A trial check scores 1 or 0. Text matching ignores case. An output path is dot-separated: `data.queue`, `state.handed_off` or `tool_calls.0.name`. `data` and `state` are what the agent returned on its last turn. A missing path never equals a value, not even `null`.
+A trial check scores 1 or 0. `reply_contains` and `reply_not_contains` ignore case. `equals` and `tool_called` match exactly. An output path is dot-separated and starts with `reply`, `data`, `state` or `tool_calls`: `data.queue`, `state.handed_off` or `tool_calls.0.name`. `reply`, `data` and `state` are what the agent returned on its last turn; `tool_calls` lists every turn's calls, in order. A missing path never equals a value, not even `null`.
 
 A custom check is a command or URL that uses the same JSON in and out as the target:
 
@@ -160,14 +160,13 @@ A custom check is a command or URL that uses the same JSON in and out as the tar
 
 ## 7. Judges
 
-A judge is a file in the repository, `<name>.judge.yaml`, in `evals/judges/`:
+A judge is a file, `<name>.judge.yaml`, in a `judges/` folder next to the eval file. It can judge any output: a reply, a summary, a record or a conversation.
 
 ```yaml
-name: goal-completion
+name: faithful
 prompt: |
-  Did the assistant get the user to the right outcome?
-  Pass if the problem is solved, or the assistant hands off correctly.
-  Fail if it misunderstood, gave wrong guidance, or looped.
+  Does the output state only facts found in the input?
+  Pass if every claim is supported. Fail if any claim is not.
 choices: {pass: 1, fail: 0}
 ```
 
@@ -199,11 +198,11 @@ A runner may also send the same rows to an eval platform. The local files are th
 | `tags`, `metadata` | Copied from the eval. |
 | `agent_version` | A label for the agent version under test, such as a git commit. |
 | `models` | Every model that the run used, by role: `agent`, `judge`, `user`. Whatever names the runner knows. |
-| `eval_hash` | SHA-256 of the eval file, its cases file and its judge files. |
+| `eval_hash` | SHA-256 over every file the eval uses: the eval file, its cases file, its judge files and its `{type: file}` inputs, hashed in path order. A runner may add custom check scripts. |
 | `status` | `passed`, `failed`, `error` or `not_evaluated`. |
-| `scores` | Per scorer: `value` (the mean, or the run number), `passed` (true, false or null if no pass rule), and `failing_cases`. |
+| `scores` | Per scorer: `value` (the mean, or the run number), `passed` (true, false or null if no pass rule), `failing_cases`, and `reason` from a run scorer. |
 | `latency_ms` | p50 and p95 of one turn. |
-| `cost_usd` | Mean cost of one trial, for the agent and for the judges. |
+| `cost_usd` | Mean cost of one trial, for the `agent`, the `judges` and the simulated `user`. |
 | `cases` | `total`, the number of test cases, and `errored`, the ids of test cases that errored. |
 
 Status, in order:
@@ -217,13 +216,13 @@ Status, in order:
 
 `failing_cases` lists the test cases that fall short on a trial scorer: a case with any trial below `x` for `{each: x}`, a case whose trials average below `x` for `{mean: x}`, or a case with any trial below 1 when the scorer has no pass rule. Run scorers have no `failing_cases`.
 
-Each row in `rows.jsonl` has `case_id`, `trial`, `tags` (the test case's), `input`, `expected`, `output` (the `transcript`, `tool_calls` each with the `turn` it happened on, and the last `data` and `state`), `scores` (per scorer: `score`, `reason` and any `value`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
+Each row in `rows.jsonl` has `case_id`, `trial`, `tags` (the test case's), `input`, `expected`, `output` (the `transcript`, `tool_calls` each with the `turn` it happened on, counting from 1, and the last `reply`, `data` and `state`), `scores` (per scorer: `score`, `reason` and any `value`), `latency_ms` (per turn), `cost_usd` and, if it errored, `error`.
 
-Scorers read only the logged rows. So a runner can re-score a saved run without calling the agent again.
+Scorers read only the logged rows. A custom check gets `input` and `output` in this same shape, with file paths made absolute. So a runner can re-score a saved run without calling the agent again.
 
 ### 8.1 Errors
 
-A trial can fail for a reason outside the agent's logic: the target crashes, a judge or the simulated user breaks, or a call times out. The runner retries it first. If it still fails, the row gets `error: {kind, message}`, with `kind` of `target`, `judge`, `user` or `timeout`, and no scores.
+A trial can fail for a reason outside the agent's logic: the target crashes, a check, a judge or the simulated user breaks, or a call times out. The runner retries it first. If it still fails, the row gets `error: {kind, message}`, with `kind` of `target`, `check`, `judge`, `user` or `timeout`, and no scores.
 
 ### 8.2 Comparing runs
 
@@ -232,7 +231,7 @@ To compare two versions of an agent, run the eval on each and compare the two re
 ## 9. Rules
 
 1. Check each eval file against `eval.schema.json`. Unknown fields are errors, except inside `metadata`, `data`, `state` and `expected`.
-2. A runner rejects an eval with two test cases or two scorers of the same name, or with an `expected` key that names no scorer. A typo there would otherwise skip a check without a word.
-3. An eval must be able to fail. Run it once against a target that replies with nothing and calls no tools. If it passes, the test cases or scorers are too weak. The exception is an eval that only checks that something does not happen, such as `tool_not_called`.
+2. A runner rejects an eval with two test cases or two scorers of the same name, or with an `expected` key that names no scorer. A typo there would otherwise skip a check without a word. Judge files have only the four fields in 7; the runner checks them.
+3. An eval must be able to fail. Run it once against a target that returns an empty response, `{}`. If it passes, the test cases or scorers are too weak. The exception is an eval that only checks that something does not happen, such as `tool_not_called`.
 4. A change that breaks existing evals raises `oes`. A new optional field does not.
 5. To add a built-in check, add a row to the table in 6.

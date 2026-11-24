@@ -9,7 +9,7 @@ Every test case is one of two kinds:
 | Kind | What it does |
 |---|---|
 | **Single-turn** | Calls the agent once. Ask a question, label a ticket, extract a PDF. |
-| **Multi-turn** | Calls it several times in a row, with fixed inputs or an AI playing the user. A support chat, a coding task with follow-ups. |
+| **Multi-turn** | Calls it several times in a row, with fixed inputs or an AI playing the user. A coding task with follow-ups, a support chat. |
 
 ```yaml
 oes: 1
@@ -22,7 +22,7 @@ cases:
     input:
       message: What is the capital of France?
     expected:
-      knows-capital: [Paris]     # the reply must mention Paris
+      knows-capital: [Paris]     # under the scorer's name: the reply must mention Paris
 ```
 
 ## Use it with a coding agent

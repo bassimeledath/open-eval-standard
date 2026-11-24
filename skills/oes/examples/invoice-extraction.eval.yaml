@@ -3,9 +3,9 @@ name: invoice-extraction
 description: The agent reads an invoice PDF and pulls out the vendor, total and due date.
 target: {http: "http://localhost:8000/extract"}
 scorers:                       # scorer names are your own choice
-  - {name: vendor, check: equals, pass: {mean: 0.95}}
+  - {name: fields, check: equals, pass: {mean: 0.95}}
   - name: total
-    check: {command: "python checks/close_enough.py"}   # numbers within a tolerance
+    check: {command: "python evals/checks/close_enough.py"}   # score 1 or 0; value logs how far off
     params: {path: data.total, tolerance: 0.01}
     pass: {each: 1}
   - {name: fast, check: latency_p95_ms, pass: {max: 5000}}
@@ -15,6 +15,6 @@ cases:
       data:
         invoice: {type: file, path: fixtures/acme-march.pdf, mime: application/pdf}
     expected:
-      vendor: {data.vendor: Acme Corp, data.due_date: "2026-04-15"}
+      fields: {data.vendor: Acme Corp, data.due_date: "2026-04-15"}
       total: 1249.50
     tags: [scanned]

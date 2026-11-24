@@ -134,9 +134,9 @@
         {"required": ["persona", "script"]},
         {"required": ["message", "messages"]}
       ]},
-      "dependentRequired": {
-        "persona": ["max_turns"],
-        "script": ["max_turns"]
+      "dependentRequired": {"persona": ["max_turns"]},
+      "dependentSchemas": {
+        "stop_when": {"anyOf": [{"required": ["script"]}, {"required": ["persona"]}]}
       },
       "properties": {
         "message": {"$ref": "#/$defs/content"},
