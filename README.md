@@ -2,7 +2,9 @@
 
 A dead simple standard for testing AI agents. Each test says what to give your agent, what you expect it to do, and how to tell whether it passed. Plain YAML files, any language, any model provider.
 
-<img src="docs/on-my-eval.jpg" alt="An engineer reports a 94% score. A colleague asks to run the same evals. They need the script, the spreadsheet, a Slack thread from March, and Dave, who is chained to his laptop." width="560">
+<p align="center">
+  <img src="docs/on-my-eval.jpg" alt="An engineer reports a 94% score. A colleague asks to run the same evals. They need the script, the spreadsheet, a Slack thread from March, and Dave, who is chained to his laptop." width="560">
+</p>
 
 A score like 94% is easier to interpret when you can see the tests behind it. With OES, those tests live in your repo as YAML files that teammates can read, review, and run again when the prompt or model changes.
 
