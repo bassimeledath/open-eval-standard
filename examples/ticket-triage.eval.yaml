@@ -1,0 +1,19 @@
+openeval: 1
+name: ticket-triage
+kind: single_turn
+description: The app labels each support ticket with the right queue.
+target: {command: "python -m triage.eval_entry"}
+scorers:
+  - {name: right_queue, check: equals, pass: {mean: 0.9}}
+  - {name: fast_enough, check: latency_max_ms, params: {value: 2000}, pass: {mean: 0.95}}
+cases:
+  - id: refund-request
+    input:
+      data: {subject: "Charged twice", body: "I was billed two times for one order."}
+    expected:
+      equals: {data.queue: billing}
+  - id: password-reset
+    input:
+      data: {subject: "Can't log in", body: "The reset email never arrives."}
+    expected:
+      equals: {data.queue: account}

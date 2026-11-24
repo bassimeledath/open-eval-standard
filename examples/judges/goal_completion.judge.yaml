@@ -1,0 +1,10 @@
+name: goal_completion
+version: 2
+uses: [transcript, input, expected]
+prompt: |
+  Judge whether the assistant got the user to the right outcome.
+  - "pass": the problem is solved, or the assistant hands off correctly.
+  - "partial": there was progress, but no clear next step.
+  - "fail": the assistant misunderstood, gave wrong guidance, or looped.
+choices: {pass: 1.0, partial: 0.5, fail: 0.0}
+model: null
