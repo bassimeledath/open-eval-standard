@@ -170,7 +170,7 @@ choices: {pass: 1, fail: 0}
 | `choices` | No | Each answer and its score. Default `{pass: 1, fail: 0}`. |
 | `model` | No | The model to use, as a name the runner understands. Default: the runner's judge model. |
 
-The runner sends the judge model the prompt, the test case's input (with any files, if the model accepts them), the transcript and output, and the scorer's expected entry, if there is one (often a list of rules, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. The runner logs both.
+The runner sends the judge model the prompt, the test case's input (with any files, if the model accepts them), the transcript and output, and the scorer's expected entry, if there is one (often a list of criteria, or a reference answer). The judge answers in JSON, `{reason, choice}`, giving its reason first. The runner logs both.
 
 Prefer two choices. They are easier to agree on and to check against human labels. Before trusting a judge, check it against a few human labels.
 

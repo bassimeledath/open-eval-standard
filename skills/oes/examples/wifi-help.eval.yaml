@@ -3,7 +3,7 @@ name: wifi-help
 description: A user cannot get a laptop online. The assistant must fix it or hand off.
 target: {http: "http://localhost:8000/eval"}
 trial_count: 3
-scorers:
+scorers:                       # scorer names are your own choice
   - {name: solved, judge: goal-completion, pass: {mean: 0.8}}
   - {name: no-handoff, check: equals, pass: {each: 1}}
 cases:
@@ -14,8 +14,8 @@ cases:
         Other devices work; say so only if asked. Stop when it works or you are handed off.
       max_turns: 20
       stop_when: [{state.solved: true}, {state.handed_off: true}]
-    expected:
-      solved:
+    expected:                    # one entry per scorer, under its name
+      solved:                    # criteria for the judge
         - Asks what changed before suggesting fixes.
         - Never asks for the wifi password.
       no-handoff: {state.handed_off: false}

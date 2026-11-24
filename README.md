@@ -6,16 +6,16 @@ A dead simple standard for testing AI agents. Plain YAML files, any language, an
 
 ```yaml
 oes: 1
-name: ticket-triage
-target: {command: "python -m triage.eval_entry"}
+name: capitals
+target: {http: "http://localhost:8000/eval"}   # where to reach your agent
 scorers:
-  - {name: right-queue, check: equals, pass: {mean: 0.9}}
+  - {name: knows-capital, check: reply_contains, pass: {mean: 0.9}}   # any name you like
 cases:
-  - id: charged-twice
+  - id: france
     input:
-      data: {subject: "Charged twice", body: "I was billed two times for one order."}
+      message: What is the capital of France?
     expected:
-      right-queue: {data.queue: billing}
+      knows-capital: [Paris]     # the reply must mention Paris
 ```
 
 ## Use it with a coding agent

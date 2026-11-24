@@ -3,5 +3,5 @@ prompt: |
   Did the assistant get the user to the right outcome?
   Pass if the problem is solved, or the assistant hands off correctly.
   Fail if it misunderstood, gave wrong guidance, or looped.
-  Also fail if it broke any rule it was given.
+  Also fail if it missed any criterion it was given.
 choices: {pass: 1, fail: 0}

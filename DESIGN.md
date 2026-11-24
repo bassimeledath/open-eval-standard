@@ -49,7 +49,7 @@ Every test case uses the same fields. What you put in the input decides how it r
 
 **Code before AI.** Use a check when code can tell if an answer is right. Use a judge only when it can't. Checks are fast, free and never change their minds.
 
-**Each scorer reads its own expectations.** In a test case, `expected` has one entry per scorer, under the scorer's name. So one eval can have several scorers of the same kind, each with its own rule.
+**Each scorer reads its own expectations.** In a test case, `expected` has one entry per scorer, under the scorer's name. So one eval can have several scorers of the same kind, each with its own pass rule.
 
 **One run stands alone.** A result describes one run of one version of the agent. To compare two versions, compare their results, but only when the eval and the judges are the same in both.
 
