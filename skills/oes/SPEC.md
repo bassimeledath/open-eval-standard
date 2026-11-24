@@ -1,6 +1,6 @@
 # Open Eval Standard (OES)
 
-Version 1, draft 3.
+Version 1, draft 4.
 
 ## 1. Purpose
 
@@ -15,8 +15,8 @@ An agent here is any AI system that takes an input and replies or acts: a chatbo
 | Eval | A named group of test cases for one agent, plus how to call the agent and how to score it. One file. |
 | Test case | One input, with what we expect. |
 | Target | The agent entry point the runner calls. |
-| Turn | One call to the target: the user speaks, the agent replies. |
-| Transcript | Every message in a test case's conversation, in order. |
+| Turn | One call to the target: it gets an input and returns an output. |
+| Transcript | Every message in a test case's conversation, in order. Empty for an agent with no conversation. |
 | State | Data the agent carries from one turn to the next. |
 | Scorer | Gives a trial a score from 0 to 1. A check runs code. A judge asks an LLM. |
 | Trial | One attempt at one test case. A test case can run several trials. |
@@ -57,21 +57,23 @@ Request:
 | Field | Meaning |
 |---|---|
 | `session_id` | A new id for each trial. The same id for every turn of one trial. |
-| `messages` | The transcript so far. The last item is the newest user message. |
-| `data` | The test case's `input.data`, or `{}`. |
+| `messages` | The transcript so far, ending with the newest user message. Empty for an agent with no conversation. |
+| `data` | The script item's `data` on a scripted turn that has one. Otherwise the test case's `input.data`, or `{}`. |
 | `state` | On the first turn, the test case's `input.state`. After that, the `state` the agent returned on the turn before. `{}` if neither. |
 
 Response. Every field is optional:
 
 | Field | Meaning |
 |---|---|
-| `reply` | The agent's reply for this turn. |
-| `data` | Structured output for this turn, such as a label or an extracted record. |
+| `reply` | The agent's text reply for this turn, if it has one. |
+| `data` | Structured output for this turn, such as a label, an extracted record or test results. |
 | `tool_calls` | Each tool the agent called this turn: `{name, args}`, plus `result` or `error` if known. |
 | `state` | The agent's state after this turn. The runner sends it back on the next turn, so the target can be stateless. |
 | `cost_usd` | What this turn cost, if the agent knows. |
 
 A message is `{role, content}`, with `role` of `user` or `assistant`. `content` is text, or a list of parts: `{type: text, text}` or `{type: file, path, mime}` for images, audio and documents.
+
+A file can also go anywhere in `data`, as the same `{type: file, path, mime}` object. In both places the runner sends `path` as an absolute path, so the target can read the file.
 
 ## 5. Test cases
 
@@ -88,20 +90,26 @@ A message is `{role, content}`, with `role` of `user` or `assistant`. `content` 
 |---|---|
 | `message` | One user message. Short for `messages: [{role: user, content: ...}]`. |
 | `messages` | The conversation so far. Use it to start at any point of a real conversation. To have the agent speak first, start with an `assistant` message. |
-| `data` | Any other JSON the agent receives. An agent with no conversation uses only `data`. |
+| `data` | Any JSON the agent receives, such as a task, a document or a record. An agent with no conversation uses only `data`. |
 | `state` | The agent's state before the first turn. |
-| `script` | Fixed user lines, sent one per turn after `message` or `messages`. |
+| `script` | Fixed inputs for the turns after the first, one per turn. An item is a user message (text or parts), or `{data: ...}` for an agent with no conversation, or `{message, data}` for both. |
 | `persona` | A simulated user, in plain text: who they are, what they want, what they know and when they stop. |
 | `max_turns` | Required with `script` or `persona`. The most turns the runner will run. |
-| `stop_when` | Output values that end the conversation early, such as `{state.done: true}`. A list ends it when any item matches: `[{state.solved: true}, {state.handed_off: true}]`. |
+| `stop_when` | Output values that end a multi-turn test case early, such as `{state.done: true}`. A list ends it when any item matches: `[{state.solved: true}, {state.handed_off: true}]`. |
 
-The input decides how the test case runs:
+There are two kinds of test case. The input decides which, so one eval can mix both:
 
-- **One turn.** `message`, `messages` or `data` alone. The runner calls the target once. An agent that makes many tool calls inside that one call is still one turn.
-- **Scripted.** `script`. The runner sends each line in turn.
+| Kind | How it runs | Input |
+|---|---|---|
+| **Single-turn** | The runner calls the target once. An agent that makes many tool calls inside that one call is still single-turn. | `message`, `messages` or `data` |
+| **Multi-turn** | The runner calls the target several times in a row, sending `state` back each time. | `script` or `persona`, plus `max_turns` |
+
+A multi-turn test case gets each next input in one of two ways:
+
+- **Scripted.** `script` lists the inputs. The first turn uses `message`, `messages` or `data` if there is one; otherwise it uses the first script item. It suits chat replays and non-chat sequences alike, such as a task and then a follow-up for a coding agent.
 - **Simulated.** `persona`. An LLM plays the user. It writes each next user message, and can end the conversation.
 
-A scripted or simulated test case also ends at `max_turns`, or when `stop_when` matches the target's response.
+A multi-turn test case also ends at `max_turns`, or when `stop_when` matches the target's response.
 
 The simulated user gets the persona and the transcript. It replies with the next user message, or with exactly `[done]` to end the conversation. With no `message` or `messages`, it speaks first. The runner records which model played the user.
 

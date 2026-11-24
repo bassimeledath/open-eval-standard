@@ -10,7 +10,7 @@ OES is a standard way to write evals of AI agents, as plain files. `SPEC.md` in 
 ## Add evals to a project
 
 1. **Find the entry point.** Find where the agent takes a user message, or a JSON input, and returns a reply. Add a small target next to it that follows SPEC 4: it reads a request (`session_id`, `messages`, `data`, `state`) and returns `reply`, plus `data`, `tool_calls` and `state` where the agent has them. Use `command` for scripts and CLIs, `http` for servers. Don't change how the agent works.
-2. **Write the evals.** One file per eval, in `evals/<name>.eval.yaml`. Start with 5 to 20 test cases that cover the agent's main jobs and its known failures. Use one-turn test cases unless the behavior only shows up across a conversation. Use `script` to replay a real conversation, and `persona` only when the user's replies need to react to the agent.
+2. **Write the evals.** One file per eval, in `evals/<name>.eval.yaml`. Start with 5 to 20 test cases that cover the agent's main jobs and its known failures. Use single-turn test cases unless the behavior only shows up across several calls. For multi-turn, use `script` for fixed inputs (a chat replay, or a task and its follow-ups), and `persona` only when a user's replies need to react to the agent.
 3. **Prefer checks to judges.** Use a built-in check (SPEC 6) when the expected behavior is a value, a tool call or some text. Use a judge (SPEC 7) only for what code can't check, and put its criteria in the test case's expected entry. Judges go in `evals/judges/`.
 4. **Set pass rules with the user.** At least one scorer needs `pass`. If the right bar isn't obvious, ask. Don't invent thresholds.
 5. **Validate.** Check every eval file against `eval.schema.json`.

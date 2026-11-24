@@ -31,13 +31,14 @@ There are five.
 3. It scores every reply with every scorer.
 4. It checks the pass rules and writes the result.
 
-## Three kinds of test case
+## Two kinds of test case
 
-Every test case uses the same fields. What you put in the input decides how it runs.
+Every test case uses the same fields. What you put in the input decides how it runs, so one eval can mix both kinds.
 
-- **One turn.** Send one message, or a piece of data, and score the reply. This covers most agents, including one that makes many tool calls inside one request.
-- **Scripted.** Send a fixed list of user messages, one after another. Good for replaying a real conversation.
-- **Simulated.** An AI model plays the user from a short description ("a calm adult whose laptop won't connect to wifi"). Good when the user's replies need to react to what the agent says. It's the least predictable kind, so run these a few times each.
+- **Single-turn.** Call the agent once and score what comes back: answer a question, label a ticket, pull the total out of an invoice. This covers most agents, including one that makes many tool calls inside one request.
+- **Multi-turn.** Call the agent several times in a row, passing its state along. The next input comes one of two ways:
+  - **Scripted:** a fixed list, written in advance. A chat replay, or a coding task followed by "now add tests".
+  - **Simulated:** an AI model plays the user from a short description ("a calm adult whose laptop won't connect to wifi"). Good when the user's replies need to react to what the agent says. It's the least predictable, so run these a few times each.
 
 ## Design choices
 
@@ -120,14 +121,14 @@ metadata: {}
 
 ### Input
 
-At least one of `message`, `messages`, `data`, `script` or `persona`.
+At least one of `message`, `messages`, `data`, `script` or `persona`. With `script` or `persona` it's multi-turn; otherwise single-turn.
 
 ```yaml
 message: "I was billed twice."   # one user message
 messages: [ ... ]                # or the conversation so far, as messages
-data: {}                         # any other JSON the agent takes
+data: {}                         # any JSON the agent takes. Files: {type: file, path, mime}
 state: {}                        # the agent's state before the first turn
-script: ["Hi", "It's order 1042"]   # fixed user lines, one per turn
+script: ["It's order 1042", {data: {task: "Now add tests"}}]   # inputs for later turns: messages or data
 persona: A calm adult whose laptop won't join wifi.   # an AI plays this user
 max_turns: 20                    # required with script or persona
 stop_when: {state.done: true}    # end early when the agent returns this
@@ -239,5 +240,5 @@ error: null                      # or {kind: target, message: "..."}
 
 - `skills/oes/SPEC.md`: the full format.
 - `skills/oes/eval.schema.json`: checks that an eval file is valid.
-- `skills/oes/examples/`: a classifier, a tool-using agent and a simulated conversation.
+- `skills/oes/examples/`: a coding agent, invoice extraction, a ticket classifier, a refund agent with tools, and a support chat with a simulated user.
 - `skills/oes/SKILL.md`: the instructions a coding agent follows to add evals to a project.

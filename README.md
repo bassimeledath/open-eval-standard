@@ -4,6 +4,13 @@ A dead simple standard for testing AI agents. Plain YAML files, any language, an
 
 ![Open Eval Standard flow](docs/oes-diagram.svg)
 
+Every test case is one of two kinds:
+
+| Kind | What it does |
+|---|---|
+| **Single-turn** | Calls the agent once. Ask a question, label a ticket, extract a PDF. |
+| **Multi-turn** | Calls it several times in a row, with fixed inputs or an AI playing the user. A support chat, a coding task with follow-ups. |
+
 ```yaml
 oes: 1
 name: capitals
@@ -32,7 +39,7 @@ Or copy `skills/oes/` into your agent's skills folder.
 
 - [Design](DESIGN.md): what OES is and why, in plain language.
 - [Spec](skills/oes/SPEC.md): the full format.
-- [Examples](skills/oes/examples/): a classifier, a tool-using agent and a chat with a simulated user.
+- [Examples](skills/oes/examples/): a coding agent, invoice extraction, a ticket classifier, a refund agent with tools, and a support chat with a simulated user.
 
 ## Status
 
