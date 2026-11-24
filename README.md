@@ -2,11 +2,9 @@
 
 A dead simple standard for testing AI agents. Each test says what to give your agent, what you expect it to do, and how to tell whether it passed. Plain YAML files, any language, any model provider.
 
-<p align="center">
-  <img src="docs/on-my-eval.jpg" alt="An engineer reports a 94% score. A colleague asks to run the same evals. They need the script, the spreadsheet, a Slack thread from March, and Dave, who is chained to his laptop." width="560">
-</p>
+![Testing code: tests/test_refund.py, run with pytest, 42 passed. Testing agents with OES: evals/refund.eval.yaml, run with oes run, passed.](docs/code-vs-agents.svg)
 
-A score like 94% is easier to interpret when you can see the tests behind it. With OES, those tests live in your repo as YAML files that teammates can read, review, and run again when the prompt or model changes.
+Code has had this for years: tests are files in your repo, one command runs them, and CI fails when they fail. Agent evals usually live in a dashboard, a notebook or a one-off script instead. OES gives agents the same thing code has: eval files your teammates can read, review and run again whenever the prompt or model changes.
 
 Every test case is one of two kinds:
 

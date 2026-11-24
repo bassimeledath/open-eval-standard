@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" role="img" aria-labelledby="cva-title cva-desc">
+  <title id="cva-title">Testing code and testing agents</title>
+  <desc id="cva-desc">Testing code: tests/test_refund.py, run with pytest, gives 42 passed. Testing agents with OES: evals/refund.eval.yaml, run with oes run, gives passed. Both are plain files in your repo, run with one command, fail CI when they fail, and work in any project.</desc>
+
+  <defs>
+    <style>
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .head { font-size: 11px; font-weight: 600; fill: #94a3b8; letter-spacing: 0.6px; }
+      .label { font-size: 15px; font-weight: 600; fill: #0f172a; }
+      .sub { font-size: 11.5px; fill: #64748b; }
+      .chip { font-size: 13px; fill: #0f172a; }
+      .ok { font-size: 13.5px; font-weight: 600; fill: #15803d; }
+      .foot { font-size: 12px; fill: #64748b; }
+    </style>
+    <marker id="cva-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 1 1.5 L 8.5 5 L 1 8.5 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Light canvas so it stays readable on GitHub in light and dark mode -->
+  <rect x="0.5" y="0.5" width="999" height="239" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+
+  <!-- Column headers -->
+  <text x="246" y="40" class="sans head">TESTS LIVE IN</text>
+  <text x="546" y="40" class="sans head">RUN WITH</text>
+  <text x="756" y="40" class="sans head">RESULT</text>
+
+  <!-- Row 1: testing code -->
+  <g>
+    <text x="40" y="91" class="sans label">Testing code</text>
+    <rect x="236" y="68" width="250" height="36" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="252" y="91" class="mono chip">tests/test_refund.py</text>
+    <line x1="494" y1="86" x2="530" y2="86" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#cva-arrow)"/>
+    <rect x="536" y="68" width="160" height="36" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="552" y="91" class="mono chip">pytest</text>
+    <line x1="704" y1="86" x2="740" y2="86" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#cva-arrow)"/>
+    <rect x="746" y="68" width="214" height="36" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="762" y="91" class="sans ok">✓ 42 passed</text>
+  </g>
+
+  <!-- Row 2: testing agents with OES (highlighted) -->
+  <g>
+    <rect x="20" y="122" width="960" height="68" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+    <text x="40" y="152" class="sans label">Testing agents</text>
+    <text x="40" y="171" class="sans sub">with OES</text>
+    <rect x="236" y="138" width="250" height="36" rx="8" fill="#ffffff" stroke="#bfdbfe"/>
+    <text x="252" y="161" class="mono chip">evals/refund.eval.yaml</text>
+    <line x1="494" y1="156" x2="530" y2="156" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#cva-arrow)"/>
+    <rect x="536" y="138" width="160" height="36" rx="8" fill="#ffffff" stroke="#bfdbfe"/>
+    <text x="552" y="161" class="mono chip">oes run</text>
+    <line x1="704" y1="156" x2="740" y2="156" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#cva-arrow)"/>
+    <rect x="746" y="138" width="214" height="36" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="762" y="161" class="sans ok">✓ passed</text>
+  </g>
+
+  <!-- What both have -->
+  <text x="500" y="218" text-anchor="middle" class="sans foot">Plain files in your repo  ·  one command  ·  fails CI when it fails  ·  works in any project</text>
+</svg>
