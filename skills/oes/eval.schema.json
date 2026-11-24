@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/bassimeledath/open-eval-standard/skills/oes/eval.schema.json",
+  "$id": "https://github.com/bassimeledath/open-eval-standard/schema/v1/eval.schema.json",
   "title": "OES eval file",
   "type": "object",
   "required": ["oes", "name", "target", "scorers", "cases"],
@@ -142,7 +142,8 @@
       ]},
       "dependentRequired": {"persona": ["max_turns"]},
       "dependentSchemas": {
-        "stop_when": {"anyOf": [{"required": ["script"]}, {"required": ["persona"]}]}
+        "stop_when": {"anyOf": [{"required": ["script"]}, {"required": ["persona"]}]},
+        "max_turns": {"anyOf": [{"required": ["script"]}, {"required": ["persona"]}]}
       },
       "properties": {
         "message": {"$ref": "#/$defs/content"},
