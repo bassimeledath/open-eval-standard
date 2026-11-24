@@ -1,0 +1,17 @@
+openeval: 1
+name: refund-agent
+description: The agent refunds only orders that qualify, using the right tools.
+target: {http: "http://localhost:8000/eval"}
+scorers:
+  - {name: refunds, check: tool_called, pass: {each: 1}}
+  - {name: never-deletes, check: tool_not_called, pass: {each: 1}}
+  - {name: says-timeline, check: reply_contains, pass: {mean: 0.9}}
+cases:
+  - id: damaged-item
+    input:
+      message: "My order 1042 arrived broken. Can I get my money back?"
+      state: {orders: {"1042": {total: 20, status: delivered}}}
+    expected:
+      refunds: [{name: refund, args: {order_id: "1042", amount: 20}}]
+      never-deletes: [delete_order]
+      says-timeline: ["5 business days"]

@@ -1,37 +1,41 @@
 # Open Eval
 
-A plain file format for evals of AI apps: what to send the app, what to expect, and how to score it.
+A simple file format for testing AI apps.
 
-Every project ends up inventing its own eval format. Open Eval is one format that works for chatbots, agents, voice apps, classifiers and single model calls, so evals look the same across projects and any runner can run them.
-
-It's written to be handed to a coding agent: point the agent at this repo and ask it to add evals to your app. See [AGENTS.md](AGENTS.md).
+You write what to send your app and what you expect back. A runner sends it, scores the answers and tells you if the app passed. It works with any app, any language and any model provider.
 
 ```yaml
 openeval: 1
 name: ticket-triage
-kind: single_turn
 target: {command: "python -m triage.eval_entry"}
 scorers:
-  - {name: right_queue, check: equals, pass: {mean: 0.9}}
+  - {name: right-queue, check: equals, pass: {mean: 0.9}}
 cases:
-  - id: refund-request
+  - id: charged-twice
     input:
       data: {subject: "Charged twice", body: "I was billed two times for one order."}
     expected:
-      equals: {data.queue: billing}
+      right-queue: {data.queue: billing}
 ```
 
-## What's here
+## Use it with a coding agent
 
-- [SPEC.md](SPEC.md): the format. Eval files, the target interface, scorers, judges and the result of a run.
-- [schema/eval.schema.json](schema/eval.schema.json): JSON Schema for eval files.
-- [examples/](examples/): one single-turn eval, one multi-turn eval and a judge.
-- [AGENTS.md](AGENTS.md): the order of work for a coding agent adding evals to a project.
+Install the skill, then ask your agent to "add evals to this app".
+
+```bash
+npx skills add bassimeledath/open-eval
+```
+
+Or copy `skills/open-eval/` into your agent's skills folder.
+
+## Read more
+
+- [Design](DESIGN.md): what Open Eval is and why, in plain language.
+- [Spec](skills/open-eval/SPEC.md): the full format.
+- [Examples](skills/open-eval/examples/): a classifier, a tool-using agent and a chat with a simulated user.
 
 ## Status
 
-Draft, version 1. The format may change before a first release.
+Draft. The format may change before version 1 is final.
 
-## License
-
-MIT
+MIT license.
