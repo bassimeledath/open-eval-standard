@@ -206,13 +206,15 @@ npx skills add bassimeledath/open-eval-standard
 
 Or copy `skills/oes/` into your agent's skills folder.
 
-## How it fits with pytest, DeepEval and eval platforms
+## How it fits with what you already use
 
-They do different jobs, and work well together.
+### Test frameworks: pytest, DeepEval
 
-- **pytest or DeepEval** are for tests in your code: call a Python function and check what it returns.
-- **OES** tests the whole agent from the outside, the way Hurl tests an HTTP API: the running agent, in any language, with tests that live as plain files.
-- **Braintrust, LangSmith, Langfuse and the rest** are for storing runs and looking at traces. Keep using them. With OES your eval definitions stay in your repo, so they don't change when you switch platforms.
+These test your code from the inside: import a function, call it, check what it returns. OES tests the running agent from the outside, the way Hurl tests an HTTP API, so it works for any agent in any language and the tests live as plain files. Use both: a test framework for the logic in your code, OES for the agent as a whole.
+
+### Eval and observability platforms: Braintrust, LangSmith, Langfuse, Arize
+
+These store runs, show traces, compare experiments and monitor production. Keep using them. OES defines the evals themselves, as files in your repo: run them with `oes` in CI and send the results to your platform to look at. If you switch platforms, your eval files don't change.
 
 ## Read more
 
