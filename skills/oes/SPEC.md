@@ -1,6 +1,6 @@
 # Open Eval Standard (OES)
 
-Version 1, draft 5.
+Version 1.0.0-rc.1.
 
 ## 1. Purpose
 

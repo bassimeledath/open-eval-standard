@@ -23,5 +23,5 @@ cases:
       script:
         - {data: {task: Now add tests for the due date.}}   # ends after this one
     expected:
-      tests-pass: {min_passing: 12}
+      tests-pass: {min_passing: 4}   # the 3 starting tests, plus at least one new one
       no-risky-git: [push_to_remote, delete_branch]

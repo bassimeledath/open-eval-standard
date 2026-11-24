@@ -1,6 +1,6 @@
 # oes-runner (TypeScript)
 
-The TypeScript reference runner for the Open Eval Standard. It follows `skills/oes/SPEC.md` (v1, draft 5) and writes `runner: {name: "oes-typescript", version: "0.1.0"}` into every result.
+The TypeScript reference runner for the Open Eval Standard. It follows `skills/oes/SPEC.md` (version 1.0.0-rc.1) and writes `runner: {name: "oes-typescript", version: "0.1.0"}` into every result.
 
 ## Install and build
 

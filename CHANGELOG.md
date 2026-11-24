@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.0.0-rc.1 (unreleased)
+## 1.0.0-rc.1 (2026-11-24)
 
 The first release candidate of OES version 1.
 
 - The spec, with the eval file, target protocol, scorers, judges, results and the runner command line.
 - JSON Schemas for eval files, judge files and results (`skills/oes/*.schema.json`).
-- The `oes` agent skill, with five examples: a coding agent, invoice extraction, a ticket classifier, a refund agent and a support chat.
+- The `oes` agent skill, with five examples: a coding agent, invoice extraction, a ticket classifier, a refund agent and a support chat. Every example passes `oes validate`, with its fixtures and check scripts included.
 - Reference runners in Python and TypeScript.
 - A conformance suite that every runner must pass: 82 checks, passed by both reference runners.
 

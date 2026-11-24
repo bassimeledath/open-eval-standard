@@ -1,6 +1,6 @@
 # oes-python
 
-The reference Python runner for the Open Eval Standard. One file, `oes.py`, following `skills/oes/SPEC.md` (version 1, draft 5). It needs Python 3.10 or later, `ruamel.yaml` and `jsonschema`.
+The reference Python runner for the Open Eval Standard. One file, `oes.py`, following `skills/oes/SPEC.md` (version 1.0.0-rc.1). It needs Python 3.10 or later, `ruamel.yaml` and `jsonschema`.
 
 ```bash
 uvx --from "git+https://github.com/bassimeledath/open-eval-standard#subdirectory=runners/python" oes validate evals/refund-agent.eval.yaml
